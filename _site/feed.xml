@@ -1,20 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-11-22T20:58:53+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Your awesome title</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Coding Principles</title><link href="http://localhost:4000/%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83/2018/11/22/coding-principles.html" rel="alternate" type="text/html" title="Coding Principles" /><published>2018-11-22T16:50:00+08:00</published><updated>2018-11-22T16:50:00+08:00</updated><id>http://localhost:4000/%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83/2018/11/22/coding-principles</id><content type="html" xml:base="http://localhost:4000/%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83/2018/11/22/coding-principles.html">&lt;blockquote&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-11-24T22:44:19+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">彪的乎哥’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Coding Principles</title><link href="http://localhost:4000/%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83/2018/11/22/coding-principles.html" rel="alternate" type="text/html" title="Coding Principles" /><published>2018-11-22T16:50:00+08:00</published><updated>2018-11-22T16:50:00+08:00</updated><id>http://localhost:4000/%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83/2018/11/22/coding-principles</id><content type="html" xml:base="http://localhost:4000/%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83/2018/11/22/coding-principles.html">&lt;blockquote&gt;
   &lt;p&gt;All good codes are alike; each bad code is bad in its own way.&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;编程有2年，写过或维护的系统也接近10套了，渐渐地体会出好代码和坏代码的区别。个人体会，编码还是有最佳原则可循、最佳实践可依的。编码原则总结如下：&lt;/p&gt;
 
-&lt;ol&gt;
-  &lt;li&gt;定义并使用常量，而不用硬编码&lt;/li&gt;
-  &lt;li&gt;存储枚举键，而不存储枚举值&lt;/li&gt;
-  &lt;li&gt;优先考虑用数值实现，然后考虑用逻辑实现&lt;/li&gt;
-  &lt;li&gt;一个函数只做一件事&lt;/li&gt;
-  &lt;li&gt;充分检查参数&lt;/li&gt;
-&lt;/ol&gt;
+&lt;h3 id=&quot;1-定义并使用常量而不用硬编码&quot;&gt;1. 定义并使用常量，而不用硬编码&lt;/h3&gt;
+
+&lt;h3 id=&quot;2-存储枚举键而不存储枚举值&quot;&gt;2. 存储枚举键，而不存储枚举值&lt;/h3&gt;
+
+&lt;h3 id=&quot;3-data-first-logic-last&quot;&gt;3. Data First, Logic Last&lt;/h3&gt;
+
+&lt;p&gt;优先考虑用数值实现，然后考虑用逻辑实现&lt;/p&gt;
+
+&lt;h3 id=&quot;4-一个函数只做一件事&quot;&gt;4. 一个函数只做一件事&lt;/h3&gt;
+
+&lt;h3 id=&quot;5-充分检查参数&quot;&gt;5. 充分检查参数&lt;/h3&gt;
 
 &lt;p&gt;见识过一些人的野路子编码风格，或者把自己坑到焦头烂额；或者沉浸在自建的迷宫中，自鸣得意，无法自拔。希望大家多创造喜剧，而不是悲剧吧。&lt;/p&gt;
 
-&lt;h1 id=&quot;references&quot;&gt;References&lt;/h1&gt;
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 &lt;ol&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.makeuseof.com/tag/basic-programming-principles/&quot;&gt;10 Basic Programming Principles Every Programmer Must Follow&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;</content><author><name></name></author><summary type="html">All good codes are alike; each bad code is bad in its own way.</summary></entry></feed>
