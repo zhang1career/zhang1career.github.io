@@ -22,7 +22,7 @@ jump() {
 
 + foo-bar
 {% highlight shell %}
-jump() {
+foo-bar() {
   echo 'foo@111.222.333.444'
 }
 {% endhighlight %}
