@@ -15,9 +15,8 @@ Ssh命令的不便在于，参数 `PreferredAuthentications` 过长；连接目�
 
 + jump
 {% highlight shell %}
-jump() {
-  ssh -o PreferredAuthentications=password `$1`
-}
+#!/bin/bash
+ssh -o PreferredAuthentications=password "$1" "$2"
 {% endhighlight %}
 
 + foo-bar
@@ -27,9 +26,9 @@ foo-bar() {
 }
 {% endhighlight %}
 
-**使用示例**：
+**使用示例**
 {% highlight shell %}
-jump foo-bar
+jump $(foo-bar)
 {% endhighlight %}
 
 ## 2. PHP Tools

@@ -58,9 +58,8 @@
   <li>jump</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">jump<span class="o">()</span> <span class="o">{</span>
-  ssh <span class="nt">-o</span> <span class="nv">PreferredAuthentications</span><span class="o">=</span>password <span class="sb">`</span><span class="nv">$1</span><span class="sb">`</span>
-<span class="o">}</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#!/bin/bash</span>
+ssh <span class="nt">-o</span> <span class="nv">PreferredAuthentications</span><span class="o">=</span>password <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$2</span><span class="s2">"</span></code></pre></figure>
 
 <ul>
   <li>foo-bar</li>
@@ -70,9 +69,9 @@
   <span class="nb">echo</span> <span class="s1">'foo@111.222.333.444'</span>
 <span class="o">}</span></code></pre></figure>
 
-<p><strong>使用示例</strong>：</p>
+<p><strong>使用示例</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">jump foo-bar</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">jump <span class="k">$(</span>foo-bar<span class="k">)</span></code></pre></figure>
 
 <h2 id="2-php-tools">2. PHP Tools</h2>
 <p>点击参考<a href="https://github.com/zhang1career/mytools">源码</a></p>
