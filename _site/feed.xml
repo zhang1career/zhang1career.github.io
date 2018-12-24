@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-12-24T11:36:02+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Tricks for C++</title><link href="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" rel="alternate" type="text/html" title="Tricks for C++" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/c++/2018/12/14/tricks-for-c++</id><content type="html" xml:base="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html">&lt;blockquote&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-12-24T15:16:52+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Tricks for C++</title><link href="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" rel="alternate" type="text/html" title="Tricks for C++" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/c++/2018/12/14/tricks-for-c++</id><content type="html" xml:base="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -33,6 +33,27 @@
     &lt;/li&gt;
     &lt;li id=&quot;fn:n&quot;&gt;
       &lt;p&gt;https://stackoverflow.com/questions/10405030/c-unordered-map-fail-when-used-with-a-vector-as-key &lt;a href=&quot;#fnref:n&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Guide for Redis</title><link href="http://localhost:4000/redis/2018/12/14/guide-for-redis.html" rel="alternate" type="text/html" title="Guide for Redis" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/redis/2018/12/14/guide-for-redis</id><content type="html" xml:base="http://localhost:4000/redis/2018/12/14/guide-for-redis.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-list&quot;&gt;1. List&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/h2&gt;
+
+&lt;h3 id=&quot;read-value-by-index&quot;&gt;Read value by index&lt;/h3&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LINDEX foo 1&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;preserve-part-delete-others&quot;&gt;Preserve part, delete others&lt;/h3&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LTRIM foo 1 100&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;https://redis.readthedocs.io/en/2.4/list.html &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
     &lt;/li&gt;
   &lt;/ol&gt;
 &lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Troubleshootings for MySQL</title><link href="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html" rel="alternate" type="text/html" title="Troubleshootings for MySQL" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html">&lt;blockquote&gt;
