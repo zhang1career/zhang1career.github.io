@@ -51,13 +51,17 @@
 
 <h2 id="1-list">1. List<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup></h2>
 
+<h3 id="get-length-of-list">Get length of list</h3>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">redis&gt; LLEN key</code></pre></figure>
+
 <h3 id="read-value-by-index">Read value by index</h3>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">redis&gt; LINDEX foo 1</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">redis&gt; LINDEX key index</code></pre></figure>
 
 <h3 id="preserve-part-delete-others">Preserve part, delete others</h3>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">redis&gt; LTRIM foo 1 100</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">redis&gt; LTRIM key start stop</code></pre></figure>
 
 <h2 id="reference">Reference</h2>
 <div class="footnotes">

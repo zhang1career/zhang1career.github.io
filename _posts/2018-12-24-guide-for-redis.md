@@ -10,18 +10,26 @@ categories: redis
 
 ## 1. List[^1]
 
+### Get length of list
+
+{% highlight shell %}
+redis> LLEN key
+{% endhighlight %}
+
+
 ### Read value by index
 
 {% highlight shell %}
-redis> LINDEX foo 1
+redis> LINDEX key index
 {% endhighlight %}
 
 
 ### Preserve part, delete others
 
 {% highlight shell %}
-redis> LTRIM foo 1 100
+redis> LTRIM key start stop
 {% endhighlight %}
+
 
 ## Reference
 [^1]: https://redis.readthedocs.io/en/2.4/list.html
