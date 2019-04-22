@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Troubleshootings for Http Status Code
+title:  Troubleshooting for Http Status Code
 date:   2019-04-22 23:16:00 +0800
 categories: troubleshooting
 ---
