@@ -1,24 +1,209 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-04-22T23:47:24+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Troubleshooting for Http Status Code</title><link href="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html" rel="alternate" type="text/html" title="Troubleshooting for Http Status Code" /><published>2019-04-22T23:16:00+08:00</published><updated>2019-04-22T23:16:00+08:00</updated><id>http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html">&lt;blockquote&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-04T00:36:42+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">如何实现无限写入的管道</title><link href="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html" rel="alternate" type="text/html" title="如何实现无限写入的管道" /><published>2019-05-03T18:00:00+08:00</published><updated>2019-05-03T18:00:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html">&lt;blockquote&gt;
+  &lt;p&gt;管道对于开发者是1个挑战。
+不论是阻塞型管道（buffer-size = 0），严格要求写入和读取的配合；
+还是非阻塞型管道（buffer-size &amp;gt; 0），只写不读最终依然会造成管道阻塞。
+本文尝试实现1种不需要读写配合的管道。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1要点&quot;&gt;1.要点&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;在写入和读取之间，通过程序逻辑实现无限写入&lt;/li&gt;
+  &lt;li&gt;实现 fire-and-forget 特性，以期降低写入-读取的编程耦合，降低应用开发难度&lt;/li&gt;
+  &lt;li&gt;受到缓存深度的限制，写入数据可能丢失&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2原理和实现&quot;&gt;2.原理和实现&lt;/h2&gt;
+&lt;h3 id=&quot;21心跳&quot;&gt;2.1.心跳&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;协程监听 in 管道，将收到的数据放入缓存；如果缓存满了就删除最老的数据，写入最新的数据&lt;/li&gt;
+  &lt;li&gt;协程监听 out 管道，将缓存数据放入管道；如果缓存空了就不操作管道&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type infinite struct {
+   in          chan interface{}
+   out         chan interface{}
+   buffer      []interface{}
+   bufLength   int
+}
+ 
+func NewInfinite(length int) (chan&amp;lt;- interface{}, &amp;lt;-chan interface{}, error) {
+   if length &amp;lt;= 0 {
+      return nil, nil, fmt.Errorf(&quot;length should be natural number&quot;)
+   }
+    
+   item := &amp;amp;infinite{
+      in     : make(chan interface{}),
+      out    : make(chan interface{}),
+      buffer : make([]interface{}, 0),
+      bufLength : length,
+   }
+    
+   go func() {
+      defer close(item.out)
+      item.transceive()
+   }()
+    
+   return item.in, item.out, nil
+}
+ 
+func (this *infinite) outChannel() chan interface{} {
+   if len(this.buffer) == 0 {
+      return nil
+   }
+   return this.out
+}
+ 
+func (this *infinite) outValue() interface{} {
+   if len(this.buffer) == 0 {
+      return nil
+   }
+   return this.buffer[0]
+}
+ 
+func (this *infinite) popValue() {
+   if len(this.buffer) == 0 {
+      return
+   }
+   this.buffer = this.buffer[1:]
+}
+ 
+func (this *infinite) pushValue(value interface{}) {
+   // replace oldest value by newest value
+   if len(this.buffer) &amp;gt;= this.bufLength {
+      this.popValue()
+   }
+   this.buffer = append(this.buffer, value)
+}
+ 
+func (this *infinite) transceive() {
+   for {
+      select {
+      case v, ok := &amp;lt;- this.in:
+         if !ok {
+            this.in = nil
+            return
+         }
+         this.pushValue(v)
+      case this.outChannel() &amp;lt;- this.outValue():
+         this.popValue()
+      }
+   }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;测试代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func TestNewInfinite(t *testing.T) {
+   // enviroment data
+   bufferSize := 0
+   in, out, err := NewInfinite(bufferSize)
+   if err != nil {
+      t.Error(err)
+      return
+   }
+   // reading
+   go func() {
+      for {
+         select {
+         case v, ok := &amp;lt;- out:
+            if !ok {
+               fmt.Println(&quot;in has been closed&quot;)
+               return
+            }
+            vi := v.(int)
+            fmt.Println(vi)
+         }
+      }
+      fmt.Println(&quot;finished redading&quot;)
+   }()
+   // writing
+   for i := 0; i &amp;lt; 100; i++ {
+      fmt.Println(&quot;writing&quot;, i)
+      in &amp;lt;- i
+   }
+   // closing
+   close(in)
+   fmt.Println(&quot;finished writing&quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;a参考&quot;&gt;A.参考&lt;/h2&gt;</content><author><name></name></author><summary type="html">管道对于开发者是1个挑战。 不论是阻塞型管道（buffer-size = 0），严格要求写入和读取的配合； 还是非阻塞型管道（buffer-size &amp;gt; 0），只写不读最终依然会造成管道阻塞。 本文尝试实现1种不需要读写配合的管道。</summary></entry><entry><title type="html">如何实现协程的可观测性</title><link href="http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine.html" rel="alternate" type="text/html" title="如何实现协程的可观测性" /><published>2019-05-03T17:20:00+08:00</published><updated>2019-05-03T17:20:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine.html">&lt;blockquote&gt;
+  &lt;p&gt;协程可以被控制，但是难以被观测。本文尝试实现若干观测协程的方法。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1要点&quot;&gt;1.要点&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;心跳&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2原理和实现&quot;&gt;2.原理和实现&lt;/h2&gt;
+&lt;h3 id=&quot;21心跳&quot;&gt;2.1.心跳&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;父协程创建 channel，将其放入 context.Context.WithValue 中，传递给子协程&lt;/li&gt;
+  &lt;li&gt;子协程定期向 channel 中写入心跳信号&lt;/li&gt;
+  &lt;li&gt;父协程监控心跳信号，如果一段时间内没有收到心跳信号，那么认为子协程发生协程运行故障&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const key = &quot;heartbeat&quot;
+ 
+func main() {
+    // 父协程创建 channel
+    listener := make(chan interface{})
+    ctx := context.WithValue(context.Background(), key, listener)
+    defer ctx.Done()
+    // 启动子协程
+    go heart(ctx)
+    // 父协程监控心跳信号
+    for o := range listener {
+        fmt.Println(o)
+    }
+    fmt.Println(&quot;no heartbeat!!!&quot;)
+}
+ 
+func heart(ctx context.Context) {
+    v := ctx.Value(key).(chan&amp;lt;- interface{})
+    if v == nil {
+        fmt.Println(&quot;context key not found:&quot;, key)
+        return
+    }
+    defer close(v)
+    // 子协程定期向 channel 中写入心跳信号
+    tick := time.Tick(time.Second)
+    for i:=1; i&amp;lt;50; i++ {
+        select {
+        case t := &amp;lt;- tick:
+            v &amp;lt;- t
+        default:
+            time.Sleep(100 * time.Millisecond)
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;a名词解释&quot;&gt;A.名词解释&lt;/h2&gt;
+&lt;p&gt;协程运行故障：协程在运行期间的不可预期状态，包含阻塞、死循环等。&lt;/p&gt;
+
+&lt;h2 id=&quot;b参考&quot;&gt;B.参考&lt;/h2&gt;
+
+&lt;h2 id=&quot;ctodo&quot;&gt;C.Todo&lt;/h2&gt;
+&lt;p&gt;结合《如何实现无限写入的管道》的方法，通过降低 channel 的读写耦合，达到降低编程难度的目标。&lt;/p&gt;</content><author><name></name></author><summary type="html">协程可以被控制，但是难以被观测。本文尝试实现若干观测协程的方法。</summary></entry><entry><title type="html">Troubleshooting for Http Status Code</title><link href="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html" rel="alternate" type="text/html" title="Troubleshooting for Http Status Code" /><published>2019-04-22T23:16:00+08:00</published><updated>2019-04-22T23:16:00+08:00</updated><id>http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
-&lt;h1 id=&quot;status-code&quot;&gt;Status Code&lt;/h1&gt;
+&lt;h1 id=&quot;http-status-code&quot;&gt;Http Status Code&lt;/h1&gt;
 
-&lt;h2 id=&quot;3xx&quot;&gt;3XX&lt;/h2&gt;
-
-&lt;h3 id=&quot;302-found&quot;&gt;302 Found&lt;/h3&gt;
+&lt;h2 id=&quot;302-found&quot;&gt;302 Found&lt;/h2&gt;
 &lt;p&gt;A common way of performing URL redirection.&lt;/p&gt;
 
-&lt;h2 id=&quot;4xx&quot;&gt;4XX&lt;/h2&gt;
-
-&lt;h3 id=&quot;400-bad-request&quot;&gt;400 Bad Request&lt;/h3&gt;
+&lt;h2 id=&quot;400-bad-request&quot;&gt;400 Bad Request&lt;/h2&gt;
 &lt;p&gt;The HTTP request that was sent to the server has invalid syntax. 
 The user’s cookie that is associated with the site is corrupt.
 Clearing the browser’s cache and cookies could solve this issue
 Malformed request due to a faulty browser
 Malformed request due to human error when manually forming HTTP requests (e.g. using curl incorrectly)&lt;/p&gt;
 
-&lt;h3 id=&quot;401--unauthorized-error&quot;&gt;401  Unauthorized Error&lt;/h3&gt;
+&lt;h2 id=&quot;401--unauthorized-error&quot;&gt;401  Unauthorized Error&lt;/h2&gt;
 &lt;p&gt;Client-side checkage:
 Check if inputting an incorrect URL
 Clear cookies to update auth info
@@ -28,21 +213,19 @@ Server-side checkage:
 Confirm the WWW-Authenticate Header
 Check Web Server Configuration&lt;/p&gt;
 
-&lt;h3 id=&quot;403-forbidden&quot;&gt;403 Forbidden&lt;/h3&gt;
+&lt;h2 id=&quot;403-forbidden&quot;&gt;403 Forbidden&lt;/h2&gt;
 &lt;p&gt;The server understood the request, but will not fulfill it due to client related issues.&lt;/p&gt;
 
-&lt;h3 id=&quot;404-not-found&quot;&gt;404 Not Found&lt;/h3&gt;
+&lt;h2 id=&quot;404-not-found&quot;&gt;404 Not Found&lt;/h2&gt;
 &lt;p&gt;nginx try_files 引导至此&lt;/p&gt;
 
-&lt;h3 id=&quot;451-unavailable-for-legal-reasons&quot;&gt;451 Unavailable For Legal Reasons&lt;/h3&gt;
+&lt;h2 id=&quot;451-unavailable-for-legal-reasons&quot;&gt;451 Unavailable For Legal Reasons&lt;/h2&gt;
 &lt;p&gt;Such as the webpage censored by a government.&lt;/p&gt;
 
-&lt;h2 id=&quot;5xx&quot;&gt;5XX&lt;/h2&gt;
-
-&lt;h3 id=&quot;500-internal-server-error&quot;&gt;500 Internal Server Error&lt;/h3&gt;
+&lt;h2 id=&quot;500-internal-server-error&quot;&gt;500 Internal Server Error&lt;/h2&gt;
 &lt;p&gt;nginx try_files 未定义最有1个参数&lt;/p&gt;
 
-&lt;h3 id=&quot;502-bad-gateway&quot;&gt;502 Bad Gateway&lt;/h3&gt;
+&lt;h2 id=&quot;502-bad-gateway&quot;&gt;502 Bad Gateway&lt;/h2&gt;
 &lt;p&gt;The server is a gateway or proxy server, and it is not receiving a valid response from the backend servers that should actually fulfill the request.&lt;/p&gt;
 
 &lt;p&gt;If the server in question is a reverse proxy server, such as a load balancer, here are a few things to check:&lt;/p&gt;
@@ -52,17 +235,42 @@ The reverse proxy is configured properly, with the proper backends specified
 The network connection between the backend servers and reverse proxy server is healthy. If the servers can communicate on other ports, make sure that the firewall is allowing the traffic between them
 If your web application is configured to listen on a socket, ensure that the socket exists in the correct location and that it has the proper permissions&lt;/p&gt;
 
-&lt;h3 id=&quot;503-service-unavailable&quot;&gt;503 Service Unavailable&lt;/h3&gt;
+&lt;h2 id=&quot;503-service-unavailable&quot;&gt;503 Service Unavailable&lt;/h2&gt;
 &lt;p&gt;This response code indicates that the server is not ready to handle the request.&lt;/p&gt;
 
 &lt;p&gt;Common causes are a server that is down for maintenance or that is overloaded. This response should be used for temporary conditions and the Retry-After HTTP header should, if possible, contain the estimated time for the recovery of the service.&lt;/p&gt;
 
 &lt;p&gt;Caching-related headers that are sent along with this response should be taken care of, as a 503 status is often a temporary condition and responses shouldn’t usually be cached.&lt;/p&gt;
 
-&lt;h3 id=&quot;504-gateway-timeout&quot;&gt;504 Gateway Timeout&lt;/h3&gt;
+&lt;h2 id=&quot;504-gateway-timeout&quot;&gt;504 Gateway Timeout&lt;/h2&gt;
 &lt;p&gt;Usually indicate that a different computer, one that doesn’t control but relies on, isn’t communicating with quickly enough.&lt;/p&gt;
 
-&lt;p&gt;https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for C++</title><link href="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" rel="alternate" type="text/html" title="Tricks for C++" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/c++/2018/12/14/tricks-for-c++</id><content type="html" xml:base="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html">&lt;blockquote&gt;
+&lt;p&gt;https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Guide for Redis</title><link href="http://localhost:4000/redis/2018/12/14/guide-for-redis.html" rel="alternate" type="text/html" title="Guide for Redis" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/redis/2018/12/14/guide-for-redis</id><content type="html" xml:base="http://localhost:4000/redis/2018/12/14/guide-for-redis.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-list&quot;&gt;1. List&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/h2&gt;
+
+&lt;h3 id=&quot;get-length-of-list&quot;&gt;Get length of list&lt;/h3&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LLEN key&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;read-value-by-index&quot;&gt;Read value by index&lt;/h3&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LINDEX key index&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;preserve-part-delete-others&quot;&gt;Preserve part, delete others&lt;/h3&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LTRIM key start stop&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;https://redis.readthedocs.io/en/2.4/list.html &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for C++</title><link href="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" rel="alternate" type="text/html" title="Tricks for C++" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/c++/2018/12/14/tricks-for-c++</id><content type="html" xml:base="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -99,32 +307,19 @@ If your web application is configured to listen on a socket, ensure that the soc
       &lt;p&gt;https://stackoverflow.com/questions/10405030/c-unordered-map-fail-when-used-with-a-vector-as-key &lt;a href=&quot;#fnref:n&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
     &lt;/li&gt;
   &lt;/ol&gt;
-&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Guide for Redis</title><link href="http://localhost:4000/redis/2018/12/14/guide-for-redis.html" rel="alternate" type="text/html" title="Guide for Redis" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/redis/2018/12/14/guide-for-redis</id><content type="html" xml:base="http://localhost:4000/redis/2018/12/14/guide-for-redis.html">&lt;blockquote&gt;
+&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for Git</title><link href="http://localhost:4000/git/2018/12/10/tricks-for-git.html" rel="alternate" type="text/html" title="Tricks for Git" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/git/2018/12/10/tricks-for-git</id><content type="html" xml:base="http://localhost:4000/git/2018/12/10/tricks-for-git.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
-&lt;h2 id=&quot;1-list&quot;&gt;1. List&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/h2&gt;
+&lt;h2 id=&quot;1-branch&quot;&gt;1. Branch&lt;/h2&gt;
 
-&lt;h3 id=&quot;get-length-of-list&quot;&gt;Get length of list&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;track all remote branch&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LLEN key&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;p&gt;使用shell命令&lt;/p&gt;
 
-&lt;h3 id=&quot;read-value-by-index&quot;&gt;Read value by index&lt;/h3&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LINDEX key index&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h3 id=&quot;preserve-part-delete-others&quot;&gt;Preserve part, delete others&lt;/h3&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LTRIM key start stop&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
-&lt;div class=&quot;footnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;https://redis.readthedocs.io/en/2.4/list.html &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Troubleshootings for MySQL</title><link href="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html" rel="alternate" type="text/html" title="Troubleshootings for MySQL" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html">&lt;blockquote&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;remote &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;git branch &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do &lt;/span&gt;git branch &lt;span class=&quot;nt&quot;&gt;--track&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;#origin/&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;done&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Troubleshootings for MySQL</title><link href="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html" rel="alternate" type="text/html" title="Troubleshootings for MySQL" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -142,19 +337,7 @@ If your web application is configured to listen on a socket, ensure that the soc
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;@@&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql_mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;REPLACE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@@&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql_mode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'ONLY_FULL_GROUP_BY'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;    仅仅设置全局，需要重新连接进来才会生效&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for Git</title><link href="http://localhost:4000/git/2018/12/10/tricks-for-git.html" rel="alternate" type="text/html" title="Tricks for Git" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/git/2018/12/10/tricks-for-git</id><content type="html" xml:base="http://localhost:4000/git/2018/12/10/tricks-for-git.html">&lt;blockquote&gt;
-
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;1-branch&quot;&gt;1. Branch&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;track all remote branch&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;使用shell命令&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;remote &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;git branch &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do &lt;/span&gt;git branch &lt;span class=&quot;nt&quot;&gt;--track&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;#origin/&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;done&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Enviroment Settings – Tools</title><link href="http://localhost:4000/%E7%8E%AF%E5%A2%83%E8%AE%BE%E7%BD%AE/2018/11/24/enviroment-settings-tools.html" rel="alternate" type="text/html" title="Enviroment Settings -- Tools" /><published>2018-11-24T22:51:00+08:00</published><updated>2018-11-24T22:51:00+08:00</updated><id>http://localhost:4000/%E7%8E%AF%E5%A2%83%E8%AE%BE%E7%BD%AE/2018/11/24/enviroment-settings-tools</id><content type="html" xml:base="http://localhost:4000/%E7%8E%AF%E5%A2%83%E8%AE%BE%E7%BD%AE/2018/11/24/enviroment-settings-tools.html">&lt;blockquote&gt;
+&lt;p&gt;    仅仅设置全局，需要重新连接进来才会生效&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Enviroment Settings – Tools</title><link href="http://localhost:4000/%E7%8E%AF%E5%A2%83%E8%AE%BE%E7%BD%AE/2018/11/24/enviroment-settings-tools.html" rel="alternate" type="text/html" title="Enviroment Settings -- Tools" /><published>2018-11-24T22:51:00+08:00</published><updated>2018-11-24T22:51:00+08:00</updated><id>http://localhost:4000/%E7%8E%AF%E5%A2%83%E8%AE%BE%E7%BD%AE/2018/11/24/enviroment-settings-tools</id><content type="html" xml:base="http://localhost:4000/%E7%8E%AF%E5%A2%83%E8%AE%BE%E7%BD%AE/2018/11/24/enviroment-settings-tools.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
