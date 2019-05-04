@@ -1,143 +1,256 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-04T17:12:53+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">如何实现真正异步读写的管道</title><link href="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html" rel="alternate" type="text/html" title="如何实现真正异步读写的管道" /><published>2019-05-03T18:00:00+08:00</published><updated>2019-05-03T18:00:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html">&lt;blockquote&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-04T21:00:21+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">如何实现变参函数</title><link href="http://localhost:4000/go/2019/05/04/how-to-handle-variadic-function.html" rel="alternate" type="text/html" title="如何实现变参函数" /><published>2019-05-04T20:30:00+08:00</published><updated>2019-05-04T20:30:00+08:00</updated><id>http://localhost:4000/go/2019/05/04/how-to-handle-variadic-function</id><content type="html" xml:base="http://localhost:4000/go/2019/05/04/how-to-handle-variadic-function.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
+
+&lt;h2 id=&quot;2-原理&quot;&gt;2. 原理&lt;/h2&gt;
+
+&lt;h2 id=&quot;3-示例&quot;&gt;3. 示例&lt;/h2&gt;
+
+&lt;h2 id=&quot;a-参考&quot;&gt;A. 参考&lt;/h2&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何选择可变管道</title><link href="http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel.html" rel="alternate" type="text/html" title="如何选择可变管道" /><published>2019-05-04T20:30:00+08:00</published><updated>2019-05-04T20:30:00+08:00</updated><id>http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;可变参数的接收[1]&lt;/li&gt;
+  &lt;li&gt;递归 select&lt;/li&gt;
+  &lt;li&gt;reflect.Select[2]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-原理&quot;&gt;2. 原理&lt;/h2&gt;
+
+&lt;h3 id=&quot;21递归-select&quot;&gt;2.1.递归 select&lt;/h3&gt;
+&lt;p&gt;递归 select 属于运行时多态，可变管道是编译时多态。使用前者对后者予以降维打击&lt;/p&gt;
+
+&lt;h3 id=&quot;22-reflectselect3&quot;&gt;2.2. reflect.Select[3]&lt;/h3&gt;
+
+&lt;p&gt;使用到如下字段：
+Field  | Value | Meaning
+—— | —– | ——
+chosen |       | 通道序号
+recv   |       | 接收内容
+recvOK | true  | 通道正常工作
+       | false | 通道已经关闭&lt;/p&gt;
+
+&lt;h2 id=&quot;3-示例&quot;&gt;3. 示例&lt;/h2&gt;
+
+&lt;h3 id=&quot;32-reflectselect&quot;&gt;3.2. reflect.Select&lt;/h3&gt;
+
+&lt;p&gt;代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import (
+    &quot;fmt&quot;
+    &quot;reflect&quot;
+)
+ 
+func Mux(out chan&amp;lt;- interface{}, varIns ...&amp;lt;-chan interface{}) {
+    ins := make([]&amp;lt;-chan interface{}, 0)
+    if len(varIns) &amp;gt; 0 {
+       for _, in := range varIns {
+          ins = append(ins, in)
+       }
+    }
+    
+    cases := make([]reflect.SelectCase, len(ins))
+    for i, in := range ins {
+        cases[i] = reflect.SelectCase{Dir: reflect.SelectRecv, Chan: reflect.ValueOf(in)}
+    }
+    
+    remaining := len(cases)
+    for remaining &amp;gt; 0 {
+        chosen, value, ok := reflect.Select(cases)
+        // The chosen channel has been closed, so zero out the channel to disable the case
+        if !ok {
+            cases[chosen].Chan = reflect.ValueOf(nil)
+            remaining -= 1
+            continue
+        }
+        fmt.Printf(&quot;Channel%#v: %s\n&quot;, ins[chosen], value.String())
+        out &amp;lt;- value
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;a-参考&quot;&gt;A. 参考&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://zhagn1career.github.io/go/2019/05/03/how-to-handle-variadic-function.html&quot;&gt;如何实现变参函数&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/19992334/how-to-listen-to-n-channels-dynamic-select-statement&quot;&gt;You Should use reflect.Select&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://golang.org/pkg/reflect/#Select&quot;&gt;reflect.Select&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://tevic.github.io/2016/05/10/select-case/&quot;&gt;使用SelectCase来做不定数量的channel选择&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何实现 map 排序</title><link href="http://localhost:4000/go/2019/05/04/how-to-sort-a-go-map.html" rel="alternate" type="text/html" title="如何实现 map 排序" /><published>2019-05-04T20:10:00+08:00</published><updated>2019-05-04T20:10:00+08:00</updated><id>http://localhost:4000/go/2019/05/04/how-to-sort-a-go-map</id><content type="html" xml:base="http://localhost:4000/go/2019/05/04/how-to-sort-a-go-map.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;map 是无序的&lt;/li&gt;
+  &lt;li&gt;先把 map 转换成 array，再对 array 排序&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-实现&quot;&gt;2. 实现&lt;/h2&gt;
+
+&lt;p&gt;代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type KV struct {
+    Key: int
+    Value: interface{}
+}
+
+func SortMap(m map[int]interface{}) []KV {
+    var keys []int
+    
+    for k := range m {
+        keys = append(keys, k)
+    }
+    sort.Ints(keys)
+    
+    ret := make([]KV, len(m))
+    for i, k := range keys {
+        ret[i] = KV{Key: k, Value: m[k]}
+    }
+    
+    return ret
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何实现真正异步读写的管道</title><link href="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html" rel="alternate" type="text/html" title="如何实现真正异步读写的管道" /><published>2019-05-03T18:00:00+08:00</published><updated>2019-05-03T18:00:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html">&lt;blockquote&gt;
   &lt;p&gt;使用管道并不轻松。无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。
 本文提出一种无阻塞读写的管道。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h2 id=&quot;1要点&quot;&gt;1.要点&lt;/h2&gt;
+&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;由程序逻辑实现在二个管道。一个只写，一个只读；二者异步操作[1]&lt;/li&gt;
   &lt;li&gt;提供 fire-and-forget 特性。降低应用开发难度；受到缓存深度影响，写入数据可能丢失&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&quot;2原理&quot;&gt;2.原理&lt;/h2&gt;
+&lt;h2 id=&quot;2-原理&quot;&gt;2. 原理&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;创建二个管道。一个只写（in 管道），一个只读（out 管道）&lt;/li&gt;
   &lt;li&gt;监听 in 管道。把数据放入缓存；如果缓存满了就删除最老的数据，写入最新的数据&lt;/li&gt;
   &lt;li&gt;监听 out 管道。输出缓存数据；如果缓存空了就不操作&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&quot;3实现&quot;&gt;3.实现&lt;/h2&gt;
+&lt;h2 id=&quot;3-实现&quot;&gt;3. 实现&lt;/h2&gt;
 &lt;p&gt;代码如下：&lt;/p&gt;
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type infinite struct {
-   in          chan interface{}
-   out         chan interface{}
-   buffer      []interface{}
-   bufLength   int
+    in          chan interface{}
+    out         chan interface{}
+    buffer      []interface{}
+    bufLength   int
 }
  
 func NewInfinite(length int) (chan&amp;lt;- interface{}, &amp;lt;-chan interface{}, error) {
-   if length &amp;lt;= 0 {
-      return nil, nil, fmt.Errorf(&quot;length should be natural number&quot;)
-   }
+    if length &amp;lt;= 0 {
+        return nil, nil, fmt.Errorf(&quot;length should be natural number&quot;)
+    }
     
-   item := &amp;amp;infinite{
-      in     : make(chan interface{}),
-      out    : make(chan interface{}),
-      buffer : make([]interface{}, 0),
-      bufLength : length,
-   }
+    item := &amp;amp;infinite{
+        in     : make(chan interface{}),
+        out    : make(chan interface{}),
+        buffer : make([]interface{}, 0),
+        bufLength : length,
+    }
     
-   go func() {
-      defer close(item.out)
-      item.transceive()
-   }()
+    go func() {
+        defer close(item.out)
+        item.transceive()
+    }()
     
    return item.in, item.out, nil
 }
  
 func (this *infinite) outChannel() chan interface{} {
-   if len(this.buffer) == 0 {
-      return nil
-   }
-   return this.out
+    if len(this.buffer) == 0 {
+        return nil
+    }
+    return this.out
 }
  
 func (this *infinite) outValue() interface{} {
-   if len(this.buffer) == 0 {
-      return nil
-   }
-   return this.buffer[0]
+    if len(this.buffer) == 0 {
+        return nil
+    }
+    return this.buffer[0]
 }
  
 func (this *infinite) popValue() {
-   if len(this.buffer) == 0 {
-      return
-   }
-   this.buffer = this.buffer[1:]
+    if len(this.buffer) == 0 {
+        return
+    }
+    this.buffer = this.buffer[1:]
 }
  
 func (this *infinite) pushValue(value interface{}) {
-   // replace oldest value by newest value
-   if len(this.buffer) &amp;gt;= this.bufLength {
-      this.popValue()
-   }
-   this.buffer = append(this.buffer, value)
+    // replace oldest value by newest value
+    if len(this.buffer) &amp;gt;= this.bufLength {
+        this.popValue()
+    }
+    this.buffer = append(this.buffer, value)
 }
  
 func (this *infinite) transceive() {
-   for {
-      select {
-      case v, ok := &amp;lt;- this.in:
-         if !ok {
-            this.in = nil
-            return
-         }
-         this.pushValue(v)
-      case this.outChannel() &amp;lt;- this.outValue():
-         this.popValue()
-      }
-   }
+    for {
+        select {
+        case v, ok := &amp;lt;- this.in:
+            if !ok {
+                this.in = nil
+                return
+            }
+            this.pushValue(v)
+        case this.outChannel() &amp;lt;- this.outValue():
+            this.popValue()
+        }
+    }
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;测试代码如下：&lt;/p&gt;
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func TestNewInfinite(t *testing.T) {
-   // enviroment data
-   bufferSize := 0
-   in, out, err := NewInfinite(bufferSize)
-   if err != nil {
-      t.Error(err)
-      return
-   }
-   // reading
-   go func() {
-      for {
-         select {
-         case v, ok := &amp;lt;- out:
-            if !ok {
-               fmt.Println(&quot;in has been closed&quot;)
-               return
+    // enviroment data
+    bufferSize := 0
+    in, out, err := NewInfinite(bufferSize)
+    if err != nil {
+        t.Error(err)
+        return
+    }
+    // reading
+    go func() {
+        for {
+            select {
+            case v, ok := &amp;lt;- out:
+                if !ok {
+                    fmt.Println(&quot;in has been closed&quot;)
+                    return
+                }
+                vi := v.(int)
+                fmt.Println(vi)
             }
-            vi := v.(int)
-            fmt.Println(vi)
-         }
-      }
-      fmt.Println(&quot;finished redading&quot;)
-   }()
-   // writing
-   for i := 0; i &amp;lt; 100; i++ {
-      fmt.Println(&quot;writing&quot;, i)
-      in &amp;lt;- i
-   }
-   // closing
-   close(in)
-   fmt.Println(&quot;finished writing&quot;)
+        }
+        fmt.Println(&quot;finished redading&quot;)
+    }()
+    // writing
+    for i := 0; i &amp;lt; 100; i++ {
+        fmt.Println(&quot;writing&quot;, i)
+        in &amp;lt;- i
+    }
+    // closing
+    close(in)
+    fmt.Println(&quot;finished writing&quot;)
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;a参考&quot;&gt;A.参考&lt;/h2&gt;
+&lt;h2 id=&quot;a-参考&quot;&gt;A. 参考&lt;/h2&gt;
 &lt;ol&gt;
   &lt;li&gt;&lt;a href=&quot;https://medium.com/capital-one-tech/building-an-unbounded-channel-in-go-789e175cd2cd&quot;&gt;Building an Unbounded Channel in Go&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;</content><author><name></name></author><summary type="html">使用管道并不轻松。无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。 本文提出一种无阻塞读写的管道。</summary></entry><entry><title type="html">协程的可观测性——协程如何传出运行信息</title><link href="http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine.html" rel="alternate" type="text/html" title="协程的可观测性——协程如何传出运行信息" /><published>2019-05-03T17:20:00+08:00</published><updated>2019-05-03T17:20:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine.html">&lt;blockquote&gt;
   &lt;p&gt;协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h2 id=&quot;1要点&quot;&gt;1.要点&lt;/h2&gt;
+&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;基于 context.Context 的 key-value，实现协程传出运行信息的功能&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&quot;2原理&quot;&gt;2.原理&lt;/h2&gt;
+&lt;h2 id=&quot;2-原理&quot;&gt;2. 原理&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;父协程创建 channel 并放入 context.Context.WithValue，将 context 传递给子协程&lt;/li&gt;
   &lt;li&gt;子协程向 channel 写入运行信息&lt;/li&gt;
@@ -183,7 +296,7 @@ func children(ctx context.Context) {
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;3实现&quot;&gt;3.实现&lt;/h2&gt;
+&lt;h2 id=&quot;3-实现&quot;&gt;3. 实现&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;子协程定期向 channel 写入心跳信号&lt;/li&gt;
   &lt;li&gt;父协程监控心跳信号，如果一段时间内没有收到心跳信号，那么认为子协程发生运行故障&lt;/li&gt;
@@ -224,14 +337,12 @@ func children(ctx context.Context) {
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;a名词解释&quot;&gt;A.名词解释&lt;/h2&gt;
+&lt;h2 id=&quot;a-名词解释&quot;&gt;A. 名词解释&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;运行故障：协程在运行期间的不可预期状态，包含阻塞、死循环等。&lt;/li&gt;
 &lt;/ul&gt;</content><author><name></name></author><summary type="html">协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。</summary></entry><entry><title type="html">Troubleshooting for Http Status Code</title><link href="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html" rel="alternate" type="text/html" title="Troubleshooting for Http Status Code" /><published>2019-04-22T23:16:00+08:00</published><updated>2019-04-22T23:16:00+08:00</updated><id>http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
-
-&lt;h1 id=&quot;http-status-code&quot;&gt;Http Status Code&lt;/h1&gt;
 
 &lt;h2 id=&quot;302-found&quot;&gt;302 Found&lt;/h2&gt;
 &lt;p&gt;A common way of performing URL redirection.&lt;/p&gt;
@@ -285,32 +396,7 @@ If your web application is configured to listen on a socket, ensure that the soc
 &lt;h2 id=&quot;504-gateway-timeout&quot;&gt;504 Gateway Timeout&lt;/h2&gt;
 &lt;p&gt;Usually indicate that a different computer, one that doesn’t control but relies on, isn’t communicating with quickly enough.&lt;/p&gt;
 
-&lt;p&gt;https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Guide for Redis</title><link href="http://localhost:4000/redis/2018/12/14/guide-for-redis.html" rel="alternate" type="text/html" title="Guide for Redis" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/redis/2018/12/14/guide-for-redis</id><content type="html" xml:base="http://localhost:4000/redis/2018/12/14/guide-for-redis.html">&lt;blockquote&gt;
-
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;1-list&quot;&gt;1. List&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/h2&gt;
-
-&lt;h3 id=&quot;get-length-of-list&quot;&gt;Get length of list&lt;/h3&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LLEN key&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h3 id=&quot;read-value-by-index&quot;&gt;Read value by index&lt;/h3&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LINDEX key index&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h3 id=&quot;preserve-part-delete-others&quot;&gt;Preserve part, delete others&lt;/h3&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LTRIM key start stop&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
-&lt;div class=&quot;footnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;https://redis.readthedocs.io/en/2.4/list.html &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for C++</title><link href="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" rel="alternate" type="text/html" title="Tricks for C++" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/c++/2018/12/14/tricks-for-c++</id><content type="html" xml:base="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html">&lt;blockquote&gt;
+&lt;p&gt;https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for C++</title><link href="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" rel="alternate" type="text/html" title="Tricks for C++" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/c++/2018/12/14/tricks-for-c++</id><content type="html" xml:base="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -347,19 +433,32 @@ If your web application is configured to listen on a socket, ensure that the soc
       &lt;p&gt;https://stackoverflow.com/questions/10405030/c-unordered-map-fail-when-used-with-a-vector-as-key &lt;a href=&quot;#fnref:n&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
     &lt;/li&gt;
   &lt;/ol&gt;
-&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for Git</title><link href="http://localhost:4000/git/2018/12/10/tricks-for-git.html" rel="alternate" type="text/html" title="Tricks for Git" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/git/2018/12/10/tricks-for-git</id><content type="html" xml:base="http://localhost:4000/git/2018/12/10/tricks-for-git.html">&lt;blockquote&gt;
+&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Guide for Redis</title><link href="http://localhost:4000/redis/2018/12/14/guide-for-redis.html" rel="alternate" type="text/html" title="Guide for Redis" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/redis/2018/12/14/guide-for-redis</id><content type="html" xml:base="http://localhost:4000/redis/2018/12/14/guide-for-redis.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
-&lt;h2 id=&quot;1-branch&quot;&gt;1. Branch&lt;/h2&gt;
+&lt;h2 id=&quot;1-list&quot;&gt;1. List&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/h2&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;track all remote branch&lt;/li&gt;
-&lt;/ul&gt;
+&lt;h3 id=&quot;get-length-of-list&quot;&gt;Get length of list&lt;/h3&gt;
 
-&lt;p&gt;使用shell命令&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LLEN key&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;remote &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;git branch &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do &lt;/span&gt;git branch &lt;span class=&quot;nt&quot;&gt;--track&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;#origin/&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;done&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Troubleshootings for MySQL</title><link href="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html" rel="alternate" type="text/html" title="Troubleshootings for MySQL" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html">&lt;blockquote&gt;
+&lt;h3 id=&quot;read-value-by-index&quot;&gt;Read value by index&lt;/h3&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LINDEX key index&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;preserve-part-delete-others&quot;&gt;Preserve part, delete others&lt;/h3&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LTRIM key start stop&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;https://redis.readthedocs.io/en/2.4/list.html &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Troubleshootings for MySQL</title><link href="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html" rel="alternate" type="text/html" title="Troubleshootings for MySQL" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -377,157 +476,16 @@ If your web application is configured to listen on a socket, ensure that the soc
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;@@&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql_mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;REPLACE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@@&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql_mode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'ONLY_FULL_GROUP_BY'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;    仅仅设置全局，需要重新连接进来才会生效&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Enviroment Settings – Tools</title><link href="http://localhost:4000/%E7%8E%AF%E5%A2%83%E8%AE%BE%E7%BD%AE/2018/11/24/enviroment-settings-tools.html" rel="alternate" type="text/html" title="Enviroment Settings -- Tools" /><published>2018-11-24T22:51:00+08:00</published><updated>2018-11-24T22:51:00+08:00</updated><id>http://localhost:4000/%E7%8E%AF%E5%A2%83%E8%AE%BE%E7%BD%AE/2018/11/24/enviroment-settings-tools</id><content type="html" xml:base="http://localhost:4000/%E7%8E%AF%E5%A2%83%E8%AE%BE%E7%BD%AE/2018/11/24/enviroment-settings-tools.html">&lt;blockquote&gt;
+&lt;p&gt;    仅仅设置全局，需要重新连接进来才会生效&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for Git</title><link href="http://localhost:4000/git/2018/12/10/tricks-for-git.html" rel="alternate" type="text/html" title="Tricks for Git" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/git/2018/12/10/tricks-for-git</id><content type="html" xml:base="http://localhost:4000/git/2018/12/10/tricks-for-git.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
-&lt;h2 id=&quot;1-shell-tools&quot;&gt;1. Shell Tools&lt;/h2&gt;
-
-&lt;h3 id=&quot;ssh-登录&quot;&gt;Ssh 登录&lt;/h3&gt;
-&lt;p&gt;Ssh命令的不便在于，参数 &lt;code class=&quot;highlighter-rouge&quot;&gt;PreferredAuthentications&lt;/code&gt; 过长；连接目标的名称包含数字，抽象且多变。这两点都不便于记忆。现将ssh命令分为动作 &lt;code class=&quot;highlighter-rouge&quot;&gt;jump&lt;/code&gt; 和目标 &lt;code class=&quot;highlighter-rouge&quot;&gt;foo-bar&lt;/code&gt; 两部分，组合使用。&lt;/p&gt;
+&lt;h2 id=&quot;1-branch&quot;&gt;1. Branch&lt;/h2&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;jump&lt;/li&gt;
+  &lt;li&gt;track all remote branch&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
-ssh &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;PreferredAuthentications&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;password &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$2&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;p&gt;使用shell命令&lt;/p&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;foo-bar&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;foo-bar&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'foo@111.222.333.444'&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;&lt;strong&gt;使用示例&lt;/strong&gt;&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;jump &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;foo-bar&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;2-php-tools&quot;&gt;2. PHP Tools&lt;/h2&gt;
-&lt;p&gt;点击参考&lt;a href=&quot;https://github.com/zhang1career/mytools&quot;&gt;源码&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;工具准备&quot;&gt;工具准备&lt;/h3&gt;
-&lt;p&gt;使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Symfony/Component/Console/Application&lt;/code&gt; 搭建 PHP 命令行工具 &lt;code class=&quot;highlighter-rouge&quot;&gt;mit&lt;/code&gt;，定义具体功能的基类 &lt;code class=&quot;highlighter-rouge&quot;&gt;Tool&lt;/code&gt;。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;mit&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-php&quot; data-lang=&quot;php&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$app&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Application&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'info'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'app'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'info'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'version'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;SomeTool&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nv&quot;&gt;$app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nb&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getMessage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Tool&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-php&quot; data-lang=&quot;php&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Tools&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Command&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;execute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;InputInterface&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;OutputInterface&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// get argument values&lt;/span&gt;
-        &lt;span class=&quot;nv&quot;&gt;$this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getArguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// get action&lt;/span&gt;
-        &lt;span class=&quot;nv&quot;&gt;$action&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;namepath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'\\'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UCFirst&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;strtolower&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getArgument&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'action'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)));&lt;/span&gt;
-        &lt;span class=&quot;sd&quot;&gt;/** @var CommandInterface $obj */&lt;/span&gt;
-        &lt;span class=&quot;nv&quot;&gt;$obj&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$action&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;nv&quot;&gt;$value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$obj&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;nv&quot;&gt;$output&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;writeln&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&amp;lt;info&amp;gt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$value&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;lt;/info&amp;gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h3 id=&quot;lnmp-管理&quot;&gt;LNMP 管理&lt;/h3&gt;
-&lt;p&gt;定义 LNMP 管理的子类 &lt;code class=&quot;highlighter-rouge&quot;&gt;lnmp&lt;/code&gt;，以及具体动作 &lt;code class=&quot;highlighter-rouge&quot;&gt;start&lt;/code&gt;。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;lnmp&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-php&quot; data-lang=&quot;php&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Lnmp&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Tools&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$NAME&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'lnmp'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$DESCRIPTION&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'Start LNMP services.'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$ARGUMENTS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
-            &lt;span class=&quot;s1&quot;&gt;'name'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'action'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;s1&quot;&gt;'mode'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;InputArgument&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;REQUIRED&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;s1&quot;&gt;'description'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'Action the lnmp does, i.e. start, stop, restart'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__construct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;__construct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;nv&quot;&gt;$this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;namepath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;__NAMESPACE__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;start&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-php&quot; data-lang=&quot;php&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Start&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;CommandInterface&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;array&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[])&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// create logs folder&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;nv&quot;&gt;$this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mkdir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'/tmp/logs/nginx'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;nv&quot;&gt;$this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mkdir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'/tmp/logs/php'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;nv&quot;&gt;$this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mkdir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'/tmp/logs/redis'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;nv&quot;&gt;$this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mkdir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'/tmp/logs/risk-engine'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-        &lt;span class=&quot;c1&quot;&gt;// start nginx&lt;/span&gt;
-        &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pgrep nginx&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'sudo nginx'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'sudo nginx -s reload'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-        &lt;span class=&quot;c1&quot;&gt;// start php-fpm&lt;/span&gt;
-        &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'launchctl unload -w /path/to/php.plist'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'launchctl load   -w /path/to/php.plist'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;&lt;strong&gt;使用示例&lt;/strong&gt;：&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;mit lnmp start&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Coding Principles</title><link href="http://localhost:4000/%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83/2018/11/22/coding-principles.html" rel="alternate" type="text/html" title="Coding Principles" /><published>2018-11-22T16:50:00+08:00</published><updated>2018-11-22T16:50:00+08:00</updated><id>http://localhost:4000/%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83/2018/11/22/coding-principles</id><content type="html" xml:base="http://localhost:4000/%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83/2018/11/22/coding-principles.html">&lt;blockquote&gt;
-  &lt;p&gt;All good codes are alike; each bad code is bad in its own way.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;编程有2年，写过或维护的系统也接近10套了，渐渐地体会出好代码和坏代码的区别。个人体会，编码还是有最佳原则可循、最佳实践可依的。编码原则总结如下：&lt;/p&gt;
-
-&lt;h3 id=&quot;1-定义并使用常量而不用硬编码&quot;&gt;1. 定义并使用常量，而不用硬编码&lt;/h3&gt;
-
-&lt;h3 id=&quot;2-存储枚举键而不存储枚举值&quot;&gt;2. 存储枚举键，而不存储枚举值&lt;/h3&gt;
-
-&lt;h3 id=&quot;3-data-first-logic-last&quot;&gt;3. Data First, Logic Last&lt;/h3&gt;
-
-&lt;p&gt;优先考虑用数值实现，然后考虑用逻辑实现&lt;/p&gt;
-
-&lt;h3 id=&quot;4-一个函数只做一件事&quot;&gt;4. 一个函数只做一件事&lt;/h3&gt;
-
-&lt;h3 id=&quot;5-充分检查参数&quot;&gt;5. 充分检查参数&lt;/h3&gt;
-
-&lt;p&gt;见识过一些人的野路子编码风格，或者把自己坑到焦头烂额；或者沉浸在自建的迷宫中，自鸣得意，无法自拔。希望大家多创造喜剧，而不是悲剧吧。&lt;/p&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.makeuseof.com/tag/basic-programming-principles/&quot;&gt;10 Basic Programming Principles Every Programmer Must Follow&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html">All good codes are alike; each bad code is bad in its own way.</summary></entry></feed>
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;remote &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;git branch &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do &lt;/span&gt;git branch &lt;span class=&quot;nt&quot;&gt;--track&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;#origin/&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;done&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><summary type="html"></summary></entry></feed>

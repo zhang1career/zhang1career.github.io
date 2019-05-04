@@ -7,8 +7,6 @@ categories: troubleshooting
 
 >
 
-# Http Status Code
-
 ## 302 Found
 A common way of performing URL redirection.
 

@@ -49,12 +49,12 @@
   <p>协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。</p>
 </blockquote>
 
-<h2 id="1要点">1.要点</h2>
+<h2 id="1-要点">1. 要点</h2>
 <ul>
   <li>基于 context.Context 的 key-value，实现协程传出运行信息的功能</li>
 </ul>
 
-<h2 id="2原理">2.原理</h2>
+<h2 id="2-原理">2. 原理</h2>
 <ul>
   <li>父协程创建 channel 并放入 context.Context.WithValue，将 context 传递给子协程</li>
   <li>子协程向 channel 写入运行信息</li>
@@ -100,7 +100,7 @@ func children(ctx context.Context) {
 }
 </code></pre></div></div>
 
-<h2 id="3实现">3.实现</h2>
+<h2 id="3-实现">3. 实现</h2>
 <ul>
   <li>子协程定期向 channel 写入心跳信号</li>
   <li>父协程监控心跳信号，如果一段时间内没有收到心跳信号，那么认为子协程发生运行故障</li>
@@ -141,7 +141,7 @@ func children(ctx context.Context) {
 }
 </code></pre></div></div>
 
-<h2 id="a名词解释">A.名词解释</h2>
+<h2 id="a-名词解释">A. 名词解释</h2>
 <ul>
   <li>运行故障：协程在运行期间的不可预期状态，包含阻塞、死循环等。</li>
 </ul>

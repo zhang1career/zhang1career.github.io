@@ -9,125 +9,125 @@ categories: go
 > 本文提出一种无阻塞读写的管道。
 
 
-## 1.要点
+## 1. 要点
 + 由程序逻辑实现在二个管道。一个只写，一个只读；二者异步操作[1]
 + 提供 fire-and-forget 特性。降低应用开发难度；受到缓存深度影响，写入数据可能丢失
 
-## 2.原理
+## 2. 原理
 + 创建二个管道。一个只写（in 管道），一个只读（out 管道）
 + 监听 in 管道。把数据放入缓存；如果缓存满了就删除最老的数据，写入最新的数据
 + 监听 out 管道。输出缓存数据；如果缓存空了就不操作
 
-## 3.实现
+## 3. 实现
 代码如下：
 ```
 type infinite struct {
-   in          chan interface{}
-   out         chan interface{}
-   buffer      []interface{}
-   bufLength   int
+    in          chan interface{}
+    out         chan interface{}
+    buffer      []interface{}
+    bufLength   int
 }
  
 func NewInfinite(length int) (chan<- interface{}, <-chan interface{}, error) {
-   if length <= 0 {
-      return nil, nil, fmt.Errorf("length should be natural number")
-   }
+    if length <= 0 {
+        return nil, nil, fmt.Errorf("length should be natural number")
+    }
     
-   item := &infinite{
-      in     : make(chan interface{}),
-      out    : make(chan interface{}),
-      buffer : make([]interface{}, 0),
-      bufLength : length,
-   }
+    item := &infinite{
+        in     : make(chan interface{}),
+        out    : make(chan interface{}),
+        buffer : make([]interface{}, 0),
+        bufLength : length,
+    }
     
-   go func() {
-      defer close(item.out)
-      item.transceive()
-   }()
+    go func() {
+        defer close(item.out)
+        item.transceive()
+    }()
     
    return item.in, item.out, nil
 }
  
 func (this *infinite) outChannel() chan interface{} {
-   if len(this.buffer) == 0 {
-      return nil
-   }
-   return this.out
+    if len(this.buffer) == 0 {
+        return nil
+    }
+    return this.out
 }
  
 func (this *infinite) outValue() interface{} {
-   if len(this.buffer) == 0 {
-      return nil
-   }
-   return this.buffer[0]
+    if len(this.buffer) == 0 {
+        return nil
+    }
+    return this.buffer[0]
 }
  
 func (this *infinite) popValue() {
-   if len(this.buffer) == 0 {
-      return
-   }
-   this.buffer = this.buffer[1:]
+    if len(this.buffer) == 0 {
+        return
+    }
+    this.buffer = this.buffer[1:]
 }
  
 func (this *infinite) pushValue(value interface{}) {
-   // replace oldest value by newest value
-   if len(this.buffer) >= this.bufLength {
-      this.popValue()
-   }
-   this.buffer = append(this.buffer, value)
+    // replace oldest value by newest value
+    if len(this.buffer) >= this.bufLength {
+        this.popValue()
+    }
+    this.buffer = append(this.buffer, value)
 }
  
 func (this *infinite) transceive() {
-   for {
-      select {
-      case v, ok := <- this.in:
-         if !ok {
-            this.in = nil
-            return
-         }
-         this.pushValue(v)
-      case this.outChannel() <- this.outValue():
-         this.popValue()
-      }
-   }
+    for {
+        select {
+        case v, ok := <- this.in:
+            if !ok {
+                this.in = nil
+                return
+            }
+            this.pushValue(v)
+        case this.outChannel() <- this.outValue():
+            this.popValue()
+        }
+    }
 }
 ```
 
 测试代码如下：
 ```
 func TestNewInfinite(t *testing.T) {
-   // enviroment data
-   bufferSize := 0
-   in, out, err := NewInfinite(bufferSize)
-   if err != nil {
-      t.Error(err)
-      return
-   }
-   // reading
-   go func() {
-      for {
-         select {
-         case v, ok := <- out:
-            if !ok {
-               fmt.Println("in has been closed")
-               return
+    // enviroment data
+    bufferSize := 0
+    in, out, err := NewInfinite(bufferSize)
+    if err != nil {
+        t.Error(err)
+        return
+    }
+    // reading
+    go func() {
+        for {
+            select {
+            case v, ok := <- out:
+                if !ok {
+                    fmt.Println("in has been closed")
+                    return
+                }
+                vi := v.(int)
+                fmt.Println(vi)
             }
-            vi := v.(int)
-            fmt.Println(vi)
-         }
-      }
-      fmt.Println("finished redading")
-   }()
-   // writing
-   for i := 0; i < 100; i++ {
-      fmt.Println("writing", i)
-      in <- i
-   }
-   // closing
-   close(in)
-   fmt.Println("finished writing")
+        }
+        fmt.Println("finished redading")
+    }()
+    // writing
+    for i := 0; i < 100; i++ {
+        fmt.Println("writing", i)
+        in <- i
+    }
+    // closing
+    close(in)
+    fmt.Println("finished writing")
 }
 ```
 
-## A.参考
+## A. 参考
 1. [Building an Unbounded Channel in Go](https://medium.com/capital-one-tech/building-an-unbounded-channel-in-go-789e175cd2cd)
