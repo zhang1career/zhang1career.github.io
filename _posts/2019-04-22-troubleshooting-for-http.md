@@ -1,62 +1,76 @@
 ---
 layout: post
-title:  Troubleshooting for Http Status Code
+title:  Troubleshooting for Http
 date:   2019-04-22 23:16:00 +0800
 categories: troubleshooting
 ---
 
 >
 
+# 1. Status Code[1]
+
 ## 302 Found
 A common way of performing URL redirection.
 
 ## 400 Bad Request
-The HTTP request that was sent to the server has invalid syntax. 
-The user's cookie that is associated with the site is corrupt.
-Clearing the browser's cache and cookies could solve this issue
-Malformed request due to a faulty browser
-Malformed request due to human error when manually forming HTTP requests (e.g. using curl incorrectly)
+Cause
++ the HTTP request that was sent to the server has invalid syntax. 
++ the user's cookie that is associated with the site is corrupt.
+
+Checkage
++ clearing the browser's cache and cookies could solve this issue
++ malformed request due to a faulty browser
++ malformed request due to human error when manually forming HTTP requests (e.g. using curl incorrectly)
 
 ## 401  Unauthorized Error
-Client-side checkage:
-Check if inputting an incorrect URL
-Clear cookies to update auth info
-Clear cache to refresh webpage
-Logout and Login
-Server-side checkage:
-Confirm the WWW-Authenticate Header
-Check Web Server Configuration
+Client-side checkage
++ check if inputting an incorrect URL
++ clear cookies to update auth info
++ clear cache to refresh webpage
++ logout and login
+
+Server-side checkage
++ confirm the WWW-Authenticate Header
++ check Web Server Configuration
 
 ## 403 Forbidden
-The server understood the request, but will not fulfill it due to client related issues.
+Cause
++ the server understood the request, but will not fulfill it due to client related issues.
 
 ## 404 Not Found
-nginx try_files 引导至此
+Checkage
++ nginx try_files settings
 
 ## 451 Unavailable For Legal Reasons
-Such as the webpage censored by a government.
+Cause
++ the webpage censored by a government
 
 ## 500 Internal Server Error
-nginx try_files 未定义最有1个参数
+Checkage
++ programing
 
 ## 502 Bad Gateway
-The server is a gateway or proxy server, and it is not receiving a valid response from the backend servers that should actually fulfill the request. 
+Cause
++ the server is a gateway or proxy server, and it is not receiving a valid response from the backend servers that should actually fulfill the request. 
  
-If the server in question is a reverse proxy server, such as a load balancer, here are a few things to check:
-
-The backend servers (where the HTTP requests are being forwarded to) are healthy
-The reverse proxy is configured properly, with the proper backends specified
-The network connection between the backend servers and reverse proxy server is healthy. If the servers can communicate on other ports, make sure that the firewall is allowing the traffic between them
-If your web application is configured to listen on a socket, ensure that the socket exists in the correct location and that it has the proper permissions
+If the server in question is a reverse proxy server, such as a load balancer, here are a few checkage
++ the backend servers (where the HTTP requests are being forwarded to) are healthy
++ the reverse proxy is configured properly, with the proper backends specified
++ the network connection between the backend servers and reverse proxy server is healthy. If the servers can communicate on other ports, make sure that the firewall is allowing the traffic between them
++ if your web application is configured to listen on a socket, ensure that the socket exists in the correct location and that it has the proper permissions
 
 ## 503 Service Unavailable
-This response code indicates that the server is not ready to handle the request.
+The server is not ready to handle the request.
 
-Common causes are a server that is down for maintenance or that is overloaded. This response should be used for temporary conditions and the Retry-After HTTP header should, if possible, contain the estimated time for the recovery of the service.
- 
+Cause
++ a server being down for maintenance or being overloaded
+
+Caution
 Caching-related headers that are sent along with this response should be taken care of, as a 503 status is often a temporary condition and responses shouldn't usually be cached.
 
 ## 504 Gateway Timeout
-Usually indicate that a different computer, one that doesn't control but relies on, isn't communicating with quickly enough.
+A different computer that doesn't control but relies on, isn't communicating with quickly enough.
 
-https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes
+
+# A. Reference
+1.[How To Troubleshoot Common HTTP Error Codes](https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes)

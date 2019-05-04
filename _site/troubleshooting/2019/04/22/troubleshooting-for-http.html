@@ -3,9 +3,9 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
-<title>Troubleshooting for Http Status Code | zhang1career’s Blog</title>
+<title>Troubleshooting for Http | zhang1career’s Blog</title>
 <meta name="generator" content="Jekyll v3.8.5" />
-<meta property="og:title" content="Troubleshooting for Http Status Code" />
+<meta property="og:title" content="Troubleshooting for Http" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
 <meta property="og:description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
@@ -15,7 +15,7 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-04-22T23:16:00+08:00" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html","headline":"Troubleshooting for Http Status Code","dateModified":"2019-04-22T23:16:00+08:00","datePublished":"2019-04-22T23:16:00+08:00","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html"},"@type":"BlogPosting","@context":"http://schema.org"}</script>
+{"url":"http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html","headline":"Troubleshooting for Http","dateModified":"2019-04-22T23:16:00+08:00","datePublished":"2019-04-22T23:16:00+08:00","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html"},"@type":"BlogPosting","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="zhang1career's Blog" /></head>
 <body><header class="site-header" role="banner">
@@ -38,7 +38,7 @@
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Troubleshooting for Http Status Code</h1>
+    <h1 class="post-title p-name" itemprop="name headline">Troubleshooting for Http</h1>
     <p class="post-meta">
       <time class="dt-published" datetime="2019-04-22T23:16:00+08:00" itemprop="datePublished">Apr 22, 2019
       </time></p>
@@ -49,59 +49,94 @@
 
 </blockquote>
 
+<h1 id="1-status-code1">1. Status Code[1]</h1>
+
 <h2 id="302-found">302 Found</h2>
 <p>A common way of performing URL redirection.</p>
 
 <h2 id="400-bad-request">400 Bad Request</h2>
-<p>The HTTP request that was sent to the server has invalid syntax. 
-The user’s cookie that is associated with the site is corrupt.
-Clearing the browser’s cache and cookies could solve this issue
-Malformed request due to a faulty browser
-Malformed request due to human error when manually forming HTTP requests (e.g. using curl incorrectly)</p>
+<p>Cause</p>
+<ul>
+  <li>the HTTP request that was sent to the server has invalid syntax.</li>
+  <li>the user’s cookie that is associated with the site is corrupt.</li>
+</ul>
+
+<p>Checkage</p>
+<ul>
+  <li>clearing the browser’s cache and cookies could solve this issue</li>
+  <li>malformed request due to a faulty browser</li>
+  <li>malformed request due to human error when manually forming HTTP requests (e.g. using curl incorrectly)</li>
+</ul>
 
 <h2 id="401--unauthorized-error">401  Unauthorized Error</h2>
-<p>Client-side checkage:
-Check if inputting an incorrect URL
-Clear cookies to update auth info
-Clear cache to refresh webpage
-Logout and Login
-Server-side checkage:
-Confirm the WWW-Authenticate Header
-Check Web Server Configuration</p>
+<p>Client-side checkage</p>
+<ul>
+  <li>check if inputting an incorrect URL</li>
+  <li>clear cookies to update auth info</li>
+  <li>clear cache to refresh webpage</li>
+  <li>logout and login</li>
+</ul>
+
+<p>Server-side checkage</p>
+<ul>
+  <li>confirm the WWW-Authenticate Header</li>
+  <li>check Web Server Configuration</li>
+</ul>
 
 <h2 id="403-forbidden">403 Forbidden</h2>
-<p>The server understood the request, but will not fulfill it due to client related issues.</p>
+<p>Cause</p>
+<ul>
+  <li>the server understood the request, but will not fulfill it due to client related issues.</li>
+</ul>
 
 <h2 id="404-not-found">404 Not Found</h2>
-<p>nginx try_files 引导至此</p>
+<p>Checkage</p>
+<ul>
+  <li>nginx try_files settings</li>
+</ul>
 
 <h2 id="451-unavailable-for-legal-reasons">451 Unavailable For Legal Reasons</h2>
-<p>Such as the webpage censored by a government.</p>
+<p>Cause</p>
+<ul>
+  <li>the webpage censored by a government</li>
+</ul>
 
 <h2 id="500-internal-server-error">500 Internal Server Error</h2>
-<p>nginx try_files 未定义最有1个参数</p>
+<p>Checkage</p>
+<ul>
+  <li>programing</li>
+</ul>
 
 <h2 id="502-bad-gateway">502 Bad Gateway</h2>
-<p>The server is a gateway or proxy server, and it is not receiving a valid response from the backend servers that should actually fulfill the request.</p>
+<p>Cause</p>
+<ul>
+  <li>the server is a gateway or proxy server, and it is not receiving a valid response from the backend servers that should actually fulfill the request.</li>
+</ul>
 
-<p>If the server in question is a reverse proxy server, such as a load balancer, here are a few things to check:</p>
-
-<p>The backend servers (where the HTTP requests are being forwarded to) are healthy
-The reverse proxy is configured properly, with the proper backends specified
-The network connection between the backend servers and reverse proxy server is healthy. If the servers can communicate on other ports, make sure that the firewall is allowing the traffic between them
-If your web application is configured to listen on a socket, ensure that the socket exists in the correct location and that it has the proper permissions</p>
+<p>If the server in question is a reverse proxy server, such as a load balancer, here are a few checkage</p>
+<ul>
+  <li>the backend servers (where the HTTP requests are being forwarded to) are healthy</li>
+  <li>the reverse proxy is configured properly, with the proper backends specified</li>
+  <li>the network connection between the backend servers and reverse proxy server is healthy. If the servers can communicate on other ports, make sure that the firewall is allowing the traffic between them</li>
+  <li>if your web application is configured to listen on a socket, ensure that the socket exists in the correct location and that it has the proper permissions</li>
+</ul>
 
 <h2 id="503-service-unavailable">503 Service Unavailable</h2>
-<p>This response code indicates that the server is not ready to handle the request.</p>
+<p>The server is not ready to handle the request.</p>
 
-<p>Common causes are a server that is down for maintenance or that is overloaded. This response should be used for temporary conditions and the Retry-After HTTP header should, if possible, contain the estimated time for the recovery of the service.</p>
+<p>Cause</p>
+<ul>
+  <li>a server being down for maintenance or being overloaded</li>
+</ul>
 
-<p>Caching-related headers that are sent along with this response should be taken care of, as a 503 status is often a temporary condition and responses shouldn’t usually be cached.</p>
+<p>Caution
+Caching-related headers that are sent along with this response should be taken care of, as a 503 status is often a temporary condition and responses shouldn’t usually be cached.</p>
 
 <h2 id="504-gateway-timeout">504 Gateway Timeout</h2>
-<p>Usually indicate that a different computer, one that doesn’t control but relies on, isn’t communicating with quickly enough.</p>
+<p>A different computer that doesn’t control but relies on, isn’t communicating with quickly enough.</p>
 
-<p>https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes</p>
+<h1 id="a-reference">A. Reference</h1>
+<p>1.<a href="https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes">How To Troubleshoot Common HTTP Error Codes</a></p>
 
   </div><a class="u-url" href="/troubleshooting/2019/04/22/troubleshooting-for-http.html" hidden></a>
 </article>

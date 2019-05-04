@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  go 闭包何时计算
+title:  Go 闭包何时计算
 date:   2019-04-30 22:35:00 +0800
 categories: go
 ---

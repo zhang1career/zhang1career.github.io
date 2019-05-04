@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Troubleshootings for MySQL
+title:  Troubleshooting for MySQL
 date:   2018-12-10 15:06:00 +0800
 categories: troubleshooting
 ---
