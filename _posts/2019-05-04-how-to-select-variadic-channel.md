@@ -67,7 +67,7 @@ func Mux(out chan<- interface{}, varIns ...<-chan interface{}) {
 ```
 
 ## A. 参考
-1. [如何实现变参函数](https://zhagn1career.github.io/go/2019/05/03/how-to-handle-variadic-function.html)
+1. [如何实现变参函数](https://zhagn1career.github.io/go/2019/02/14/how-to-handle-variadic-function.html)
 2. [You Should use reflect.Select](https://stackoverflow.com/questions/19992334/how-to-listen-to-n-channels-dynamic-select-statement)
 3. [reflect.Select](https://golang.org/pkg/reflect/#Select)
 4. [使用SelectCase来做不定数量的channel选择](http://tevic.github.io/2016/05/10/select-case/)

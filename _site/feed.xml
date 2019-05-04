@@ -1,14 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-04T21:00:21+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">如何实现变参函数</title><link href="http://localhost:4000/go/2019/05/04/how-to-handle-variadic-function.html" rel="alternate" type="text/html" title="如何实现变参函数" /><published>2019-05-04T20:30:00+08:00</published><updated>2019-05-04T20:30:00+08:00</updated><id>http://localhost:4000/go/2019/05/04/how-to-handle-variadic-function</id><content type="html" xml:base="http://localhost:4000/go/2019/05/04/how-to-handle-variadic-function.html">&lt;blockquote&gt;
-
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
-
-&lt;h2 id=&quot;2-原理&quot;&gt;2. 原理&lt;/h2&gt;
-
-&lt;h2 id=&quot;3-示例&quot;&gt;3. 示例&lt;/h2&gt;
-
-&lt;h2 id=&quot;a-参考&quot;&gt;A. 参考&lt;/h2&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何选择可变管道</title><link href="http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel.html" rel="alternate" type="text/html" title="如何选择可变管道" /><published>2019-05-04T20:30:00+08:00</published><updated>2019-05-04T20:30:00+08:00</updated><id>http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel.html">&lt;blockquote&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-04T21:30:27+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">如何选择可变管道</title><link href="http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel.html" rel="alternate" type="text/html" title="如何选择可变管道" /><published>2019-05-04T20:30:00+08:00</published><updated>2019-05-04T20:30:00+08:00</updated><id>http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -74,7 +64,7 @@ func Mux(out chan&amp;lt;- interface{}, varIns ...&amp;lt;-chan interface{}) {
 
 &lt;h2 id=&quot;a-参考&quot;&gt;A. 参考&lt;/h2&gt;
 &lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://zhagn1career.github.io/go/2019/05/03/how-to-handle-variadic-function.html&quot;&gt;如何实现变参函数&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://zhagn1career.github.io/go/2019/02/14/how-to-handle-variadic-function.html&quot;&gt;如何实现变参函数&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/19992334/how-to-listen-to-n-channels-dynamic-select-statement&quot;&gt;You Should use reflect.Select&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://golang.org/pkg/reflect/#Select&quot;&gt;reflect.Select&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;http://tevic.github.io/2016/05/10/select-case/&quot;&gt;使用SelectCase来做不定数量的channel选择&lt;/a&gt;&lt;/li&gt;
@@ -396,7 +386,23 @@ If your web application is configured to listen on a socket, ensure that the soc
 &lt;h2 id=&quot;504-gateway-timeout&quot;&gt;504 Gateway Timeout&lt;/h2&gt;
 &lt;p&gt;Usually indicate that a different computer, one that doesn’t control but relies on, isn’t communicating with quickly enough.&lt;/p&gt;
 
-&lt;p&gt;https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for C++</title><link href="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" rel="alternate" type="text/html" title="Tricks for C++" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/c++/2018/12/14/tricks-for-c++</id><content type="html" xml:base="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html">&lt;blockquote&gt;
+&lt;p&gt;https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何实现变参函数</title><link href="http://localhost:4000/go/2019/02/14/how-to-handle-variadic-function.html" rel="alternate" type="text/html" title="如何实现变参函数" /><published>2019-02-14T20:30:00+08:00</published><updated>2019-02-14T20:30:00+08:00</updated><id>http://localhost:4000/go/2019/02/14/how-to-handle-variadic-function</id><content type="html" xml:base="http://localhost:4000/go/2019/02/14/how-to-handle-variadic-function.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-实现&quot;&gt;1. 实现&lt;/h2&gt;
+
+&lt;p&gt;直接上码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func demo(params ...interface{}) {
+    s := make([]interface{}, 0)
+    if len(args) &amp;gt; 0 {
+        for _, p := range params {
+            s = append(s, p)
+        }
+    }
+    fmt.Println(s)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for C++</title><link href="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" rel="alternate" type="text/html" title="Tricks for C++" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/c++/2018/12/14/tricks-for-c++</id><content type="html" xml:base="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
