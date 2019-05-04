@@ -1,24 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-04T00:40:08+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">如何实现无限写入的管道</title><link href="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html" rel="alternate" type="text/html" title="如何实现无限写入的管道" /><published>2019-05-03T18:00:00+08:00</published><updated>2019-05-03T18:00:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html">&lt;blockquote&gt;
-  &lt;p&gt;管道对于开发者是1个挑战。
-不论是阻塞型管道（buffer-size = 0），严格要求写入和读取的配合；
-还是非阻塞型管道（buffer-size &amp;gt; 0），只写不读最终依然会造成管道阻塞。
-本文尝试实现1种不需要读写配合的管道。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-04T17:12:53+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">如何实现真正异步读写的管道</title><link href="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html" rel="alternate" type="text/html" title="如何实现真正异步读写的管道" /><published>2019-05-03T18:00:00+08:00</published><updated>2019-05-03T18:00:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html">&lt;blockquote&gt;
+  &lt;p&gt;使用管道并不轻松。无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。
+本文提出一种无阻塞读写的管道。&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;h2 id=&quot;1要点&quot;&gt;1.要点&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;在写入和读取之间，通过程序逻辑实现无限写入&lt;/li&gt;
-  &lt;li&gt;实现 fire-and-forget 特性，以期降低写入-读取的编程耦合，降低应用开发难度&lt;/li&gt;
-  &lt;li&gt;受到缓存深度的限制，写入数据可能丢失&lt;/li&gt;
+  &lt;li&gt;由程序逻辑实现在二个管道。一个只写，一个只读；二者异步操作[1]&lt;/li&gt;
+  &lt;li&gt;提供 fire-and-forget 特性。降低应用开发难度；受到缓存深度影响，写入数据可能丢失&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&quot;2原理和实现&quot;&gt;2.原理和实现&lt;/h2&gt;
-&lt;h3 id=&quot;21心跳&quot;&gt;2.1.心跳&lt;/h3&gt;
+&lt;h2 id=&quot;2原理&quot;&gt;2.原理&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;协程监听 in 管道，将收到的数据放入缓存；如果缓存满了就删除最老的数据，写入最新的数据&lt;/li&gt;
-  &lt;li&gt;协程监听 out 管道，将缓存数据放入管道；如果缓存空了就不操作管道&lt;/li&gt;
+  &lt;li&gt;创建二个管道。一个只写（in 管道），一个只读（out 管道）&lt;/li&gt;
+  &lt;li&gt;监听 in 管道。把数据放入缓存；如果缓存满了就删除最老的数据，写入最新的数据&lt;/li&gt;
+  &lt;li&gt;监听 out 管道。输出缓存数据；如果缓存空了就不操作&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;h2 id=&quot;3实现&quot;&gt;3.实现&lt;/h2&gt;
 &lt;p&gt;代码如下：&lt;/p&gt;
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type infinite struct {
    in          chan interface{}
@@ -127,21 +125,68 @@ func (this *infinite) transceive() {
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;a参考&quot;&gt;A.参考&lt;/h2&gt;</content><author><name></name></author><summary type="html">管道对于开发者是1个挑战。 不论是阻塞型管道（buffer-size = 0），严格要求写入和读取的配合； 还是非阻塞型管道（buffer-size &amp;gt; 0），只写不读最终依然会造成管道阻塞。 本文尝试实现1种不需要读写配合的管道。</summary></entry><entry><title type="html">如何实现协程的可观测性</title><link href="http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine.html" rel="alternate" type="text/html" title="如何实现协程的可观测性" /><published>2019-05-03T17:20:00+08:00</published><updated>2019-05-03T17:20:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine.html">&lt;blockquote&gt;
-  &lt;p&gt;协程可以被控制，但是难以被观测。本文尝试实现若干观测协程的方法。&lt;/p&gt;
+&lt;h2 id=&quot;a参考&quot;&gt;A.参考&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://medium.com/capital-one-tech/building-an-unbounded-channel-in-go-789e175cd2cd&quot;&gt;Building an Unbounded Channel in Go&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">使用管道并不轻松。无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。 本文提出一种无阻塞读写的管道。</summary></entry><entry><title type="html">协程的可观测性——协程如何传出运行信息</title><link href="http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine.html" rel="alternate" type="text/html" title="协程的可观测性——协程如何传出运行信息" /><published>2019-05-03T17:20:00+08:00</published><updated>2019-05-03T17:20:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-observe-a-goroutine.html">&lt;blockquote&gt;
+  &lt;p&gt;协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;h2 id=&quot;1要点&quot;&gt;1.要点&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;心跳&lt;/li&gt;
+  &lt;li&gt;基于 context.Context 的 key-value，实现协程传出运行信息的功能&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&quot;2原理和实现&quot;&gt;2.原理和实现&lt;/h2&gt;
-&lt;h3 id=&quot;21心跳&quot;&gt;2.1.心跳&lt;/h3&gt;
+&lt;h2 id=&quot;2原理&quot;&gt;2.原理&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;父协程创建 channel，将其放入 context.Context.WithValue 中，传递给子协程&lt;/li&gt;
-  &lt;li&gt;子协程定期向 channel 中写入心跳信号&lt;/li&gt;
-  &lt;li&gt;父协程监控心跳信号，如果一段时间内没有收到心跳信号，那么认为子协程发生协程运行故障&lt;/li&gt;
+  &lt;li&gt;父协程创建 channel 并放入 context.Context.WithValue，将 context 传递给子协程&lt;/li&gt;
+  &lt;li&gt;子协程向 channel 写入运行信息&lt;/li&gt;
+  &lt;li&gt;父协程从 channel 读取运行信息，实现监控&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const key = &quot;info&quot;
+
+func parent() {
+    // 创建 channel
+    listener := make(chan interface{})
+    ctx := context.WithValue(context.Background(), key, listener)
+    defer ctx.Done()
+    // 启动子协程
+    go children(ctx)
+    // 监控运行信息
+    for {
+        select {
+        case o := &amp;lt;- listener:
+            fmt.Println(&quot;children running&quot;, o)
+        }
+        default:
+            time.Sleep(100 * time.Millisecond)
+    }    
+}
+ 
+func children(ctx context.Context) {
+    v := ctx.Value(key).(chan&amp;lt;- interface{})
+    if v == nil {
+        fmt.Println(&quot;context key not found:&quot;, key)
+        return
+    }
+    defer close(v)
+    // 子协程定期向 channel 中写入运行信息
+    tick := time.Tick(time.Second)
+    for {
+        select {
+        case t := &amp;lt;- tick:
+            v &amp;lt;- t
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;3实现&quot;&gt;3.实现&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;子协程定期向 channel 写入心跳信号&lt;/li&gt;
+  &lt;li&gt;父协程监控心跳信号，如果一段时间内没有收到心跳信号，那么认为子协程发生运行故障&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;代码如下：&lt;/p&gt;
@@ -153,7 +198,7 @@ func main() {
     ctx := context.WithValue(context.Background(), key, listener)
     defer ctx.Done()
     // 启动子协程
-    go heart(ctx)
+    go children(ctx)
     // 父协程监控心跳信号
     for o := range listener {
         fmt.Println(o)
@@ -161,7 +206,7 @@ func main() {
     fmt.Println(&quot;no heartbeat!!!&quot;)
 }
  
-func heart(ctx context.Context) {
+func children(ctx context.Context) {
     v := ctx.Value(key).(chan&amp;lt;- interface{})
     if v == nil {
         fmt.Println(&quot;context key not found:&quot;, key)
@@ -170,24 +215,19 @@ func heart(ctx context.Context) {
     defer close(v)
     // 子协程定期向 channel 中写入心跳信号
     tick := time.Tick(time.Second)
-    for i:=1; i&amp;lt;50; i++ {
+    for {
         select {
         case t := &amp;lt;- tick:
             v &amp;lt;- t
-        default:
-            time.Sleep(100 * time.Millisecond)
         }
     }
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h2 id=&quot;a名词解释&quot;&gt;A.名词解释&lt;/h2&gt;
-&lt;p&gt;协程运行故障：协程在运行期间的不可预期状态，包含阻塞、死循环等。&lt;/p&gt;
-
-&lt;h2 id=&quot;b参考&quot;&gt;B.参考&lt;/h2&gt;
-
-&lt;h2 id=&quot;ctodo&quot;&gt;C.Todo&lt;/h2&gt;
-&lt;p&gt;结合《如何实现无限写入的管道》的方法，通过降低 channel 的读写耦合，达到降低编程难度的目标。&lt;/p&gt;</content><author><name></name></author><summary type="html">协程可以被控制，但是难以被观测。本文尝试实现若干观测协程的方法。</summary></entry><entry><title type="html">Troubleshooting for Http Status Code</title><link href="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html" rel="alternate" type="text/html" title="Troubleshooting for Http Status Code" /><published>2019-04-22T23:16:00+08:00</published><updated>2019-04-22T23:16:00+08:00</updated><id>http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html">&lt;blockquote&gt;
+&lt;ul&gt;
+  &lt;li&gt;运行故障：协程在运行期间的不可预期状态，包含阻塞、死循环等。&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。</summary></entry><entry><title type="html">Troubleshooting for Http Status Code</title><link href="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html" rel="alternate" type="text/html" title="Troubleshooting for Http Status Code" /><published>2019-04-22T23:16:00+08:00</published><updated>2019-04-22T23:16:00+08:00</updated><id>http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
