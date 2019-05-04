@@ -73,4 +73,4 @@ A different computer that doesn't control but relies on, isn't communicating wit
 
 
 ## A. Reference
-1.[How To Troubleshoot Common HTTP Error Codes](https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes)
+1. [How To Troubleshoot Common HTTP Error Codes](https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes)
