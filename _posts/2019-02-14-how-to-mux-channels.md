@@ -1,0 +1,45 @@
+---
+layout: post
+title:  如何实现管道的多路选择
+date:   2019-02-14 22:50:00 +0800
+categories: go
+---
+
+> 
+
+## 1. 实现
+
+直接上码：
+```
+func mux(out chan<- interface{}, in1, in2 <-chan interface{}) {
+	var inBuffer []interface{}
+	var value interface{}
+	
+	for {
+		var outBuffer chan<- interface{}
+		
+		if len(inBuffer) > 0 {
+			outBuffer = out
+			value = inBuffer[0]
+		}
+		
+		select {
+		// inputs
+		case in, ok := <-in1:
+			if ok {
+				inBuffer = append(inBuffer, in)
+			}
+		case in, ok := <-in2:
+			if ok {
+				inBuffer = append(inBuffer, in)
+			}
+		// output
+		case outBuffer <- value:
+			inBuffer = inBuffer[1:]
+		}
+	}
+}
+```
+
+## A. 参考
+1. [深度讲解Go语言](https://coding.imooc.com/class/chapter/180.html#Anchor)

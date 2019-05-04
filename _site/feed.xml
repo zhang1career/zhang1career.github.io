@@ -1,107 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-04T21:30:27+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">如何选择可变管道</title><link href="http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel.html" rel="alternate" type="text/html" title="如何选择可变管道" /><published>2019-05-04T20:30:00+08:00</published><updated>2019-05-04T20:30:00+08:00</updated><id>http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/04/how-to-select-variadic-channel.html">&lt;blockquote&gt;
-
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;可变参数的接收[1]&lt;/li&gt;
-  &lt;li&gt;递归 select&lt;/li&gt;
-  &lt;li&gt;reflect.Select[2]&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;2-原理&quot;&gt;2. 原理&lt;/h2&gt;
-
-&lt;h3 id=&quot;21递归-select&quot;&gt;2.1.递归 select&lt;/h3&gt;
-&lt;p&gt;递归 select 属于运行时多态，可变管道是编译时多态。使用前者对后者予以降维打击&lt;/p&gt;
-
-&lt;h3 id=&quot;22-reflectselect3&quot;&gt;2.2. reflect.Select[3]&lt;/h3&gt;
-
-&lt;p&gt;使用到如下字段：
-Field  | Value | Meaning
-—— | —– | ——
-chosen |       | 通道序号
-recv   |       | 接收内容
-recvOK | true  | 通道正常工作
-       | false | 通道已经关闭&lt;/p&gt;
-
-&lt;h2 id=&quot;3-示例&quot;&gt;3. 示例&lt;/h2&gt;
-
-&lt;h3 id=&quot;32-reflectselect&quot;&gt;3.2. reflect.Select&lt;/h3&gt;
-
-&lt;p&gt;代码如下：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import (
-    &quot;fmt&quot;
-    &quot;reflect&quot;
-)
- 
-func Mux(out chan&amp;lt;- interface{}, varIns ...&amp;lt;-chan interface{}) {
-    ins := make([]&amp;lt;-chan interface{}, 0)
-    if len(varIns) &amp;gt; 0 {
-       for _, in := range varIns {
-          ins = append(ins, in)
-       }
-    }
-    
-    cases := make([]reflect.SelectCase, len(ins))
-    for i, in := range ins {
-        cases[i] = reflect.SelectCase{Dir: reflect.SelectRecv, Chan: reflect.ValueOf(in)}
-    }
-    
-    remaining := len(cases)
-    for remaining &amp;gt; 0 {
-        chosen, value, ok := reflect.Select(cases)
-        // The chosen channel has been closed, so zero out the channel to disable the case
-        if !ok {
-            cases[chosen].Chan = reflect.ValueOf(nil)
-            remaining -= 1
-            continue
-        }
-        fmt.Printf(&quot;Channel%#v: %s\n&quot;, ins[chosen], value.String())
-        out &amp;lt;- value
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;a-参考&quot;&gt;A. 参考&lt;/h2&gt;
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://zhagn1career.github.io/go/2019/02/14/how-to-handle-variadic-function.html&quot;&gt;如何实现变参函数&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/19992334/how-to-listen-to-n-channels-dynamic-select-statement&quot;&gt;You Should use reflect.Select&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://golang.org/pkg/reflect/#Select&quot;&gt;reflect.Select&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://tevic.github.io/2016/05/10/select-case/&quot;&gt;使用SelectCase来做不定数量的channel选择&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何实现 map 排序</title><link href="http://localhost:4000/go/2019/05/04/how-to-sort-a-go-map.html" rel="alternate" type="text/html" title="如何实现 map 排序" /><published>2019-05-04T20:10:00+08:00</published><updated>2019-05-04T20:10:00+08:00</updated><id>http://localhost:4000/go/2019/05/04/how-to-sort-a-go-map</id><content type="html" xml:base="http://localhost:4000/go/2019/05/04/how-to-sort-a-go-map.html">&lt;blockquote&gt;
-
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;map 是无序的&lt;/li&gt;
-  &lt;li&gt;先把 map 转换成 array，再对 array 排序&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;2-实现&quot;&gt;2. 实现&lt;/h2&gt;
-
-&lt;p&gt;代码如下：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type KV struct {
-    Key: int
-    Value: interface{}
-}
-
-func SortMap(m map[int]interface{}) []KV {
-    var keys []int
-    
-    for k := range m {
-        keys = append(keys, k)
-    }
-    sort.Ints(keys)
-    
-    ret := make([]KV, len(m))
-    for i, k := range keys {
-        ret[i] = KV{Key: k, Value: m[k]}
-    }
-    
-    return ret
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何实现真正异步读写的管道</title><link href="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html" rel="alternate" type="text/html" title="如何实现真正异步读写的管道" /><published>2019-05-03T18:00:00+08:00</published><updated>2019-05-03T18:00:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html">&lt;blockquote&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-04T22:51:46+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">如何实现真正异步读写的管道</title><link href="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html" rel="alternate" type="text/html" title="如何实现真正异步读写的管道" /><published>2019-05-03T18:00:00+08:00</published><updated>2019-05-03T18:00:00+08:00</updated><id>http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/05/03/how-to-fire-and-forget-a-channel.html">&lt;blockquote&gt;
   &lt;p&gt;使用管道并不轻松。无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。
 本文提出一种无阻塞读写的管道。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -330,7 +227,203 @@ func children(ctx context.Context) {
 &lt;h2 id=&quot;a-名词解释&quot;&gt;A. 名词解释&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;运行故障：协程在运行期间的不可预期状态，包含阻塞、死循环等。&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。</summary></entry><entry><title type="html">Troubleshooting for Http Status Code</title><link href="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html" rel="alternate" type="text/html" title="Troubleshooting for Http Status Code" /><published>2019-04-22T23:16:00+08:00</published><updated>2019-04-22T23:16:00+08:00</updated><id>http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html">&lt;blockquote&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。</summary></entry><entry><title type="html">如何实现 go 的时效控制</title><link href="http://localhost:4000/go/2019/04/30/how-to-timing-in-go.html" rel="alternate" type="text/html" title="如何实现 go 的时效控制" /><published>2019-04-30T22:35:00+08:00</published><updated>2019-04-30T22:35:00+08:00</updated><id>http://localhost:4000/go/2019/04/30/how-to-timing-in-go</id><content type="html" xml:base="http://localhost:4000/go/2019/04/30/how-to-timing-in-go.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-实现&quot;&gt;1. 实现&lt;/h2&gt;
+
+&lt;p&gt;直接上码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func timing(out chan&amp;lt;- interface{}, in1, in2 &amp;lt;-chan interface{}) {
+    heartbeat := time.Tick(time.Second)
+	lifetime := time.After(10 * time.Second)
+	for {
+		select {
+		// heartbeat
+		case &amp;lt;-heartbeat:
+			fmt.Println(&quot;queue len =&quot;, len(inBuffer))
+		// lifetime
+		case &amp;lt;-lifetime:
+			fmt.Println(&quot;bye&quot;)
+			return
+		}
+	}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">go 闭包何时计算</title><link href="http://localhost:4000/go/2019/04/30/when-does-a-go-closure-calc.html" rel="alternate" type="text/html" title="go 闭包何时计算" /><published>2019-04-30T22:35:00+08:00</published><updated>2019-04-30T22:35:00+08:00</updated><id>http://localhost:4000/go/2019/04/30/when-does-a-go-closure-calc</id><content type="html" xml:base="http://localhost:4000/go/2019/04/30/when-does-a-go-closure-calc.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-实现&quot;&gt;1. 实现&lt;/h2&gt;
+
+&lt;p&gt;直接上码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func calcLate() []func()  {
+    var funs []func()
+    for i:=0; i&amp;lt;2; i++  {
+        funs = append(funs, func() {
+            println(&amp;amp;i, i)
+        })
+    }
+    return funs
+}
+ 
+func calcNow() []func()  {
+    var funs []func()
+    for i:=0; i&amp;lt;2; i++  {
+        x := i
+        funs = append(funs, func() {
+            println(&amp;amp;x, x)
+        })
+    }
+    return funs
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;测试代码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;
+ 
+&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;funsLate&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;calcLate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fl&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;funsLate&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;funsNow&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;calcLate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;range&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;funsNow&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何比较 go 的结构体</title><link href="http://localhost:4000/go/2019/04/30/how-to-compare-go-structs.html" rel="alternate" type="text/html" title="如何比较 go 的结构体" /><published>2019-04-30T21:35:00+08:00</published><updated>2019-04-30T21:35:00+08:00</updated><id>http://localhost:4000/go/2019/04/30/how-to-compare-go-structs</id><content type="html" xml:base="http://localhost:4000/go/2019/04/30/how-to-compare-go-structs.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;如果元素类型不同、顺序不同，那么结构体不可比较&lt;/li&gt;
+  &lt;li&gt;如果元素包含不可比较类型（map, slice），那么结构体不可比较&lt;/li&gt;
+  &lt;li&gt;对于不可比较的结构体，使用 == 会报错，而应该使用 reflect.DeepEqual&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-实现&quot;&gt;2. 实现&lt;/h2&gt;
+
+&lt;p&gt;代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sn1 := struct {
+    age  int
+    name string
+}{age: 11, name: &quot;qq&quot;}
+ 
+ 
+sn2 := struct {
+    age  int
+    name string
+}{age: 11, name: &quot;qq&quot;}
+ 
+if reflect.DeepEqual(sn1, sn2) {
+    fmt.Println(&quot;sn1 == sn2&quot;)
+} else {
+    fmt.Println(&quot;sn1 != sn2&quot;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何选择可变管道</title><link href="http://localhost:4000/go/2019/04/30/how-to-select-variadic-channel.html" rel="alternate" type="text/html" title="如何选择可变管道" /><published>2019-04-30T20:30:00+08:00</published><updated>2019-04-30T20:30:00+08:00</updated><id>http://localhost:4000/go/2019/04/30/how-to-select-variadic-channel</id><content type="html" xml:base="http://localhost:4000/go/2019/04/30/how-to-select-variadic-channel.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;可变参数的接收[1]&lt;/li&gt;
+  &lt;li&gt;递归 select&lt;/li&gt;
+  &lt;li&gt;reflect.Select[2]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-原理&quot;&gt;2. 原理&lt;/h2&gt;
+
+&lt;h3 id=&quot;21递归-select&quot;&gt;2.1.递归 select&lt;/h3&gt;
+&lt;p&gt;递归 select 属于运行时多态，可变管道是编译时多态。使用前者对后者予以降维打击&lt;/p&gt;
+
+&lt;h3 id=&quot;22-reflectselect3&quot;&gt;2.2. reflect.Select[3]&lt;/h3&gt;
+
+&lt;p&gt;使用到如下字段：
+Field  | Value | Meaning
+—— | —– | ——
+chosen |       | 通道序号
+recv   |       | 接收内容
+recvOK | true  | 通道正常工作
+       | false | 通道已经关闭&lt;/p&gt;
+
+&lt;h2 id=&quot;3-示例&quot;&gt;3. 示例&lt;/h2&gt;
+
+&lt;h3 id=&quot;32-reflectselect&quot;&gt;3.2. reflect.Select&lt;/h3&gt;
+
+&lt;p&gt;代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import (
+    &quot;fmt&quot;
+    &quot;reflect&quot;
+)
+ 
+func Mux(out chan&amp;lt;- interface{}, varIns ...&amp;lt;-chan interface{}) {
+    ins := make([]&amp;lt;-chan interface{}, 0)
+    if len(varIns) &amp;gt; 0 {
+       for _, in := range varIns {
+          ins = append(ins, in)
+       }
+    }
+    
+    cases := make([]reflect.SelectCase, len(ins))
+    for i, in := range ins {
+        cases[i] = reflect.SelectCase{Dir: reflect.SelectRecv, Chan: reflect.ValueOf(in)}
+    }
+    
+    remaining := len(cases)
+    for remaining &amp;gt; 0 {
+        chosen, value, ok := reflect.Select(cases)
+        // The chosen channel has been closed, so zero out the channel to disable the case
+        if !ok {
+            cases[chosen].Chan = reflect.ValueOf(nil)
+            remaining -= 1
+            continue
+        }
+        fmt.Printf(&quot;Channel%#v: %s\n&quot;, ins[chosen], value.String())
+        out &amp;lt;- value
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;a-参考&quot;&gt;A. 参考&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://zhagn1career.github.io/go/2019/02/14/how-to-handle-variadic-function.html&quot;&gt;如何实现变参函数&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/19992334/how-to-listen-to-n-channels-dynamic-select-statement&quot;&gt;You Should use reflect.Select&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://golang.org/pkg/reflect/#Select&quot;&gt;reflect.Select&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://tevic.github.io/2016/05/10/select-case/&quot;&gt;使用SelectCase来做不定数量的channel选择&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何实现 map 排序</title><link href="http://localhost:4000/go/2019/04/30/how-to-sort-a-go-map.html" rel="alternate" type="text/html" title="如何实现 map 排序" /><published>2019-04-30T20:10:00+08:00</published><updated>2019-04-30T20:10:00+08:00</updated><id>http://localhost:4000/go/2019/04/30/how-to-sort-a-go-map</id><content type="html" xml:base="http://localhost:4000/go/2019/04/30/how-to-sort-a-go-map.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;map 是无序的&lt;/li&gt;
+  &lt;li&gt;先把 map 转换成 array，再对 array 排序&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-实现&quot;&gt;2. 实现&lt;/h2&gt;
+
+&lt;p&gt;代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type KV struct {
+    Key: int
+    Value: interface{}
+}
+
+func SortMap(m map[int]interface{}) []KV {
+    var keys []int
+    
+    for k := range m {
+        keys = append(keys, k)
+    }
+    sort.Ints(keys)
+    
+    ret := make([]KV, len(m))
+    for i, k := range keys {
+        ret[i] = KV{Key: k, Value: m[k]}
+    }
+    
+    return ret
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Troubleshooting for Http Status Code</title><link href="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html" rel="alternate" type="text/html" title="Troubleshooting for Http Status Code" /><published>2019-04-22T23:16:00+08:00</published><updated>2019-04-22T23:16:00+08:00</updated><id>http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2019/04/22/troubleshooting-for-http.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -386,112 +479,136 @@ If your web application is configured to listen on a socket, ensure that the soc
 &lt;h2 id=&quot;504-gateway-timeout&quot;&gt;504 Gateway Timeout&lt;/h2&gt;
 &lt;p&gt;Usually indicate that a different computer, one that doesn’t control but relies on, isn’t communicating with quickly enough.&lt;/p&gt;
 
-&lt;p&gt;https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何实现变参函数</title><link href="http://localhost:4000/go/2019/02/14/how-to-handle-variadic-function.html" rel="alternate" type="text/html" title="如何实现变参函数" /><published>2019-02-14T20:30:00+08:00</published><updated>2019-02-14T20:30:00+08:00</updated><id>http://localhost:4000/go/2019/02/14/how-to-handle-variadic-function</id><content type="html" xml:base="http://localhost:4000/go/2019/02/14/how-to-handle-variadic-function.html">&lt;blockquote&gt;
+&lt;p&gt;https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-http-error-codes&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何从 go 的应用代码抽象出通用代码</title><link href="http://localhost:4000/go/2019/02/17/how-to-abstract-code.html" rel="alternate" type="text/html" title="如何从 go 的应用代码抽象出通用代码" /><published>2019-02-17T21:40:00+08:00</published><updated>2019-02-17T21:40:00+08:00</updated><id>http://localhost:4000/go/2019/02/17/how-to-abstract-code</id><content type="html" xml:base="http://localhost:4000/go/2019/02/17/how-to-abstract-code.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
-&lt;h2 id=&quot;1-实现&quot;&gt;1. 实现&lt;/h2&gt;
+&lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;可以使用回调函数&lt;/li&gt;
+  &lt;li&gt;可以使用回调接口&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-原理&quot;&gt;2. 原理&lt;/h2&gt;
+
+&lt;h3 id=&quot;21回调函数&quot;&gt;2.1.回调函数&lt;/h3&gt;
+&lt;p&gt;通用代码保留在通用函数中；把应用代码写入回调函数中；把回调函数作为参数传给通用函数，供其调用。&lt;/p&gt;
+
+&lt;p&gt;优点&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;这是代码抽象的基本方式&lt;/li&gt;
+  &lt;li&gt;编译时多态&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;缺点&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;不是运行时多态&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;22-回调接口&quot;&gt;2.2. 回调接口&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;通用代码定义实例接口，应用代码实现这个接口&lt;/li&gt;
+  &lt;li&gt;动态代理&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;优点&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;运行时多态&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3-示例&quot;&gt;3. 示例&lt;/h2&gt;
+
+&lt;h3 id=&quot;31-通用代码&quot;&gt;3.1. 通用代码&lt;/h3&gt;
+
+&lt;p&gt;定义 Work 接口，执行 Work 接口定义的 Do()：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type Work interface {
+    Do() interface{}
+}
+
+type worker struct {
+    id      int
+    Work
+}
+
+func createWorker(id int, work Work) *worker {
+    return &amp;amp;worker{id: id, Work: work}
+}
+ 
+func (this *worker) run() {
+    go func() {
+        // 执行 Work 接口定义的 Do()
+    }()
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;接收应用代码创建的实例，执行相应的 Do()&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func (this *Parser) AddWorker(num int, out chan int, callback chan Work) {
+    for i := 0; i &amp;lt; num; i++ {
+        out &amp;lt;- i
+        work := &amp;lt;- callback
+        worker := createWorker(i, work)
+        worker.run()
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;32-应用代码&quot;&gt;3.2. 应用代码&lt;/h3&gt;
+
+&lt;p&gt;实现 Work 接口：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func (this *snowflake) Do() interface{} {
+   return fmt.SPrintf(&quot;worker%d doing&quot;, this.id)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;创建实例，以 Work 接口返回给通用代码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func CreateSnowFlow(machineIds chan int) chan Work {
+   output := make(chan Work)
+   go func() {
+      defer close(output)
+      for {
+         select {
+         case id := &amp;lt;-machineIds:
+            output &amp;lt;- createSnowFlake(id)
+         }
+      }
+   }()
+   return output
+}
+
+type snowflake struct {
+   id int
+}
+
+func createSnowFlake(id int) *snowflake {
+   return &amp;amp;snowflake{id: id}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;33-测试代码&quot;&gt;3.3. 测试代码&lt;/h3&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func TestParser(t *testing.T) {
+   machineIds := make(chan int)
+   snows := CreateSnowFlow(machineIds)
+    
+   p := Parser{}
+   p.AddWorker(100, machineIds, snows)
+   p.Run()
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">如何 prepend 切片</title><link href="http://localhost:4000/go/2019/02/15/how-to-prepend-a-go-slice.html" rel="alternate" type="text/html" title="如何 prepend 切片" /><published>2019-02-15T22:30:00+08:00</published><updated>2019-02-15T22:30:00+08:00</updated><id>http://localhost:4000/go/2019/02/15/how-to-prepend-a-go-slice</id><content type="html" xml:base="http://localhost:4000/go/2019/02/15/how-to-prepend-a-go-slice.html">&lt;blockquote&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;1-示例&quot;&gt;1. 示例&lt;/h2&gt;
 
 &lt;p&gt;直接上码：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func demo(params ...interface{}) {
-    s := make([]interface{}, 0)
-    if len(args) &amp;gt; 0 {
-        for _, p := range params {
-            s = append(s, p)
-        }
-    }
-    fmt.Println(s)
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func Prepend(slice []interface{}, elems ...interface{}) []interface{} {
+   if len(elems) &amp;lt;= 0 {
+      return slice
+   }
+    
+   ret := slice
+   for i := len(elems)-1; i &amp;gt;= 0; i-- {
+      ret = append([]interface{}{elems[i]}, ret...)
+   }
+   return ret
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for C++</title><link href="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" rel="alternate" type="text/html" title="Tricks for C++" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/c++/2018/12/14/tricks-for-c++</id><content type="html" xml:base="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html">&lt;blockquote&gt;
-
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;1-unordered_map&quot;&gt;1. unordered_map&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/h2&gt;
-
-&lt;h3 id=&quot;use-vector-as-key&quot;&gt;use vector as key&lt;sup id=&quot;fnref:n&quot;&gt;&lt;a href=&quot;#fn:n&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/h3&gt;
-
-&lt;p&gt;When using vector&lt;int&gt; as key, definition of hash is needed.&lt;/int&gt;&lt;/p&gt;
-
-&lt;p&gt;Define our hash function:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Container&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container_hash&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;operator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Container&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;boost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hash_range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Then use like this:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unordered_map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keyVector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;container_hash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keyVector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;keyVector is defined here:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keyVector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
-&lt;div class=&quot;footnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;http://www.cplusplus.com/reference/unordered_map/unordered_map/ &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-    &lt;li id=&quot;fn:n&quot;&gt;
-      &lt;p&gt;https://stackoverflow.com/questions/10405030/c-unordered-map-fail-when-used-with-a-vector-as-key &lt;a href=&quot;#fnref:n&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Guide for Redis</title><link href="http://localhost:4000/redis/2018/12/14/guide-for-redis.html" rel="alternate" type="text/html" title="Guide for Redis" /><published>2018-12-14T10:27:00+08:00</published><updated>2018-12-14T10:27:00+08:00</updated><id>http://localhost:4000/redis/2018/12/14/guide-for-redis</id><content type="html" xml:base="http://localhost:4000/redis/2018/12/14/guide-for-redis.html">&lt;blockquote&gt;
-
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;1-list&quot;&gt;1. List&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/h2&gt;
-
-&lt;h3 id=&quot;get-length-of-list&quot;&gt;Get length of list&lt;/h3&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LLEN key&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h3 id=&quot;read-value-by-index&quot;&gt;Read value by index&lt;/h3&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LINDEX key index&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h3 id=&quot;preserve-part-delete-others&quot;&gt;Preserve part, delete others&lt;/h3&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;redis&amp;gt; LTRIM key start stop&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
-&lt;div class=&quot;footnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;https://redis.readthedocs.io/en/2.4/list.html &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Troubleshootings for MySQL</title><link href="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html" rel="alternate" type="text/html" title="Troubleshootings for MySQL" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql</id><content type="html" xml:base="http://localhost:4000/troubleshooting/2018/12/10/troubleshootings-for-mysql.html">&lt;blockquote&gt;
-
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;1-server-sql-modes&quot;&gt;1. &lt;a href=&quot;https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html&quot;&gt;Server SQL Modes&lt;/a&gt;&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/41887460/select-list-is-not-in-group-by-clause-and-contains-nonaggregated-column-inc&quot;&gt;SELECT list is not in GROUP BY clause and contains nonaggregated column … incompatible with sql_mode=only_full_group_by&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;    查看全局sql_mode&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;@@&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql_mode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;    设置全局sql_mode&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;@@&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql_mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;REPLACE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@@&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql_mode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'ONLY_FULL_GROUP_BY'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;    仅仅设置全局，需要重新连接进来才会生效&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Tricks for Git</title><link href="http://localhost:4000/git/2018/12/10/tricks-for-git.html" rel="alternate" type="text/html" title="Tricks for Git" /><published>2018-12-10T15:06:00+08:00</published><updated>2018-12-10T15:06:00+08:00</updated><id>http://localhost:4000/git/2018/12/10/tricks-for-git</id><content type="html" xml:base="http://localhost:4000/git/2018/12/10/tricks-for-git.html">&lt;blockquote&gt;
-
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;1-branch&quot;&gt;1. Branch&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;track all remote branch&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;使用shell命令&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;remote &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;git branch &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do &lt;/span&gt;git branch &lt;span class=&quot;nt&quot;&gt;--track&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;#origin/&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;done&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><summary type="html"></summary></entry></feed>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html"></summary></entry></feed>
