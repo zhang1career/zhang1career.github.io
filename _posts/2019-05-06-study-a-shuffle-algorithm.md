@@ -32,8 +32,8 @@ func (this *Game) Shuffle(cards []Card, seed int) []Card {
 
 功能测试如下：
 ```go
-func (this *Game) Shuffle(cards []Card, seed int) []Card {
-	rand.Seed(time.Now().Unix() ^ (int64(seed)<<32 | int64(seed)))
+func (this *Game) Shuffle(cards []Card, salt int) []Card {
+	rand.Seed(time.Now().Unix() ^ (int64(salt)<<32 | int64(salt)))
 	for i := len(cards); i > 0; i-- {
 		r := rand.Intn(i)
 		cards[r], cards[i-1] = cards[i-1], cards[r]
