@@ -4,4 +4,4 @@ title: About
 permalink: /about/
 ---
 
-Welcome to contact me: rongjin.zh@gmail.com
+Welcome to contact rongjin.zh@gmail.com
