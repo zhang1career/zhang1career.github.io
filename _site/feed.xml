@@ -1,18 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-06T07:20:12+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">设计点赞系统</title><link href="http://localhost:4000/design-a-system/2019/05/05/design-a-like-system.html" rel="alternate" type="text/html" title="设计点赞系统" /><published>2019-05-05T23:50:00+08:00</published><updated>2019-05-05T23:50:00+08:00</updated><id>http://localhost:4000/design-a-system/2019/05/05/design-a-like-system</id><content type="html" xml:base="http://localhost:4000/design-a-system/2019/05/05/design-a-like-system.html">&lt;blockquote&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-06T15:56:35+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">设计点赞系统</title><link href="http://localhost:4000/design-a-system/2019/05/05/design-a-like-system.html" rel="alternate" type="text/html" title="设计点赞系统" /><published>2019-05-05T23:50:00+08:00</published><updated>2019-05-05T23:50:00+08:00</updated><id>http://localhost:4000/design-a-system/2019/05/05/design-a-like-system</id><content type="html" xml:base="http://localhost:4000/design-a-system/2019/05/05/design-a-like-system.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
 &lt;h2 id=&quot;1-要点&quot;&gt;1. 要点&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;以队列方式，定期批量实现分布式计数&lt;/li&gt;
-  &lt;li&gt;client 假处理（可选），提高用户体验&lt;/li&gt;
+  &lt;li&gt;client 假计数，提高用户体验（可选）&lt;/li&gt;
+  &lt;li&gt;server 真计数，异步批量计数&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&quot;2-原理&quot;&gt;2. 原理&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;client 拉取目标的点赞信息&lt;/li&gt;
   &lt;li&gt;当用户点击 like/unlike 时，client 向 server 发送请求；同时更新本地的点赞信息（可选）&lt;/li&gt;
-  &lt;li&gt;server 把请求放入队列，按照目标分组，定期批量更新的点赞信息&lt;/li&gt;
+  &lt;li&gt;server 把请求放入队列，按照目标分组，异步批量更新的点赞信息&lt;/li&gt;
   &lt;li&gt;client 定期拉取目标的点赞信息，如果计数时间新于本地计数时间，那么就更新本地的点赞信息&lt;/li&gt;
 &lt;/ul&gt;
 
