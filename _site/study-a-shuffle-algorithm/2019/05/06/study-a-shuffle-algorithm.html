@@ -7,15 +7,15 @@
 <meta name="generator" content="Jekyll v3.8.5" />
 <meta property="og:title" content="洗牌算法原理及实现" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="洗牌算法分为抽牌、换牌和插牌三种，其中抽牌对应 Fisher-Yates 算法，换牌对应 Knuth-Durstenfeld 算法[1]。" />
-<meta property="og:description" content="洗牌算法分为抽牌、换牌和插牌三种，其中抽牌对应 Fisher-Yates 算法，换牌对应 Knuth-Durstenfeld 算法[1]。" />
+<meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
+<meta property="og:description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
 <link rel="canonical" href="http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html" />
 <meta property="og:url" content="http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html" />
 <meta property="og:site_name" content="zhang1career’s Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-05-06T23:40:00+08:00" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html","headline":"洗牌算法原理及实现","dateModified":"2019-05-06T23:40:00+08:00","datePublished":"2019-05-06T23:40:00+08:00","description":"洗牌算法分为抽牌、换牌和插牌三种，其中抽牌对应 Fisher-Yates 算法，换牌对应 Knuth-Durstenfeld 算法[1]。","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html"},"@type":"BlogPosting","@context":"http://schema.org"}</script>
+{"url":"http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html","headline":"洗牌算法原理及实现","dateModified":"2019-05-06T23:40:00+08:00","datePublished":"2019-05-06T23:40:00+08:00","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html"},"@type":"BlogPosting","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="zhang1career's Blog" /></head>
 <body><header class="site-header" role="banner">
@@ -46,20 +46,17 @@
 
   <div class="post-content e-content" itemprop="articleBody">
     <blockquote>
-  <p>洗牌算法分为抽牌、换牌和插牌三种，其中抽牌对应 Fisher-Yates 算法，换牌对应 Knuth-Durstenfeld 算法[1]。</p>
+
 </blockquote>
 
 <h2 id="1-要点">1. 要点</h2>
 <ul>
-  <li>抽牌对应 Fisher-Yates 算法</li>
-  <li>换牌对应 Knuth-Durstenfeld 算法</li>
+  <li>Knuth-Durstenfeld 算法</li>
 </ul>
 
 <h2 id="2-原理">2. 原理</h2>
 
-<h3 id="21-fisher-yates-shffule">2.1. Fisher-Yates Shffule</h3>
-
-<h3 id="22-knuth-durstenfeld-shuffle">2.2. Knuth-Durstenfeld Shuffle</h3>
+<h3 id="21-knuth-durstenfeld-shuffle">2.1. Knuth-Durstenfeld Shuffle</h3>
 
 <p>代码如下：</p>
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">this</span><span class="x"> </span><span class="o">*</span><span class="n">Game</span><span class="p">)</span><span class="x"> </span><span class="n">Shuffle</span><span class="p">(</span><span class="n">cards</span><span class="x"> </span><span class="p">[]</span><span class="n">Card</span><span class="p">,</span><span class="x"> </span><span class="n">seed</span><span class="x"> </span><span class="kt">int</span><span class="p">)</span><span class="x"> </span><span class="p">[]</span><span class="n">Card</span><span class="x"> </span><span class="p">{</span><span class="x">
@@ -113,11 +110,6 @@
 	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="x">
 </span><span class="p">}</span><span class="x">
 </span></code></pre></div></div>
-
-<h2 id="a-参考">A. 参考</h2>
-<ol>
-  <li><a href="https://blog.csdn.net/qq_26399665/article/details/79831490">三种洗牌算法shuffle</a></li>
-</ol>
 
   </div><a class="u-url" href="/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html" hidden></a>
 </article>

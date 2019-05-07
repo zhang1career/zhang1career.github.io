@@ -5,18 +5,14 @@ date:   2019-05-06 23:40:00 +0800
 categories: study-a-shuffle-algorithm
 ---
 
-> 洗牌算法分为抽牌、换牌和插牌三种，其中抽牌对应 Fisher-Yates 算法，换牌对应 Knuth-Durstenfeld 算法[1]。
+> 
 
 ## 1. 要点
-+ 抽牌对应 Fisher-Yates 算法
-+ 换牌对应 Knuth-Durstenfeld 算法
-
++ Knuth-Durstenfeld 算法
 
 ## 2. 原理
 
-### 2.1. Fisher-Yates Shffule
-
-### 2.2. Knuth-Durstenfeld Shuffle
+### 2.1. Knuth-Durstenfeld Shuffle
 
 代码如下：
 ```go
@@ -73,6 +69,3 @@ func TestGame_Shufflt_Distribution(t *testing.T) {
 	fmt.Println(count)
 }
 ```
-
-## A. 参考
-1. [三种洗牌算法shuffle](https://blog.csdn.net/qq_26399665/article/details/79831490)
