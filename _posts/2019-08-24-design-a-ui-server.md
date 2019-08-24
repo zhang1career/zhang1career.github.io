@@ -62,8 +62,8 @@ categories: ui
 
 ## A. Reference
 
-Building a modular UI with server-driven rendering[https://infinum.co/the-capsized-eight/building-modular-ui-with-server-driven-rendering]
+[Building a modular UI with server-driven rendering](https://infinum.co/the-capsized-eight/building-modular-ui-with-server-driven-rendering)
 
-Client Side vs Server Side UI Rendering. Advantages and Disadvantages[https://blog.webix.com/client-side-vs-server-side-ui-rendering/]
+[Client Side vs Server Side UI Rendering. Advantages and Disadvantages](https://blog.webix.com/client-side-vs-server-side-ui-rendering)
 
 

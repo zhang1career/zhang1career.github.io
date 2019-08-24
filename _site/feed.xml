@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-07T16:09:25+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">洗牌算法原理及实现</title><link href="http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html" rel="alternate" type="text/html" title="洗牌算法原理及实现" /><published>2019-05-06T23:40:00+08:00</published><updated>2019-05-06T23:40:00+08:00</updated><id>http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm</id><content type="html" xml:base="http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html">&lt;blockquote&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-05-12T22:19:02+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">洗牌算法原理及实现</title><link href="http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html" rel="alternate" type="text/html" title="洗牌算法原理及实现" /><published>2019-05-06T23:40:00+08:00</published><updated>2019-05-06T23:40:00+08:00</updated><id>http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm</id><content type="html" xml:base="http://localhost:4000/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -567,7 +567,9 @@ func SortMap(m map[int]interface{}) []KV {
 &lt;h3 id=&quot;500-internal-server-error&quot;&gt;500 Internal Server Error&lt;/h3&gt;
 &lt;p&gt;Checkage&lt;/p&gt;
 &lt;ul&gt;
-  &lt;li&gt;programing&lt;/li&gt;
+  &lt;li&gt;first check nginx’s error.log&lt;/li&gt;
+  &lt;li&gt;then php’s php_errors.log&lt;/li&gt;
+  &lt;li&gt;then the programming&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;502-bad-gateway&quot;&gt;502 Bad Gateway&lt;/h3&gt;

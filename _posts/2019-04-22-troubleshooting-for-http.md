@@ -47,7 +47,9 @@ Cause
 
 ### 500 Internal Server Error
 Checkage
-+ programing
++ first check nginx's error.log
++ then php's php_errors.log
++ then the programming  
 
 ### 502 Bad Gateway
 Cause
