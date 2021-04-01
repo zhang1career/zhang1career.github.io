@@ -7,29 +7,29 @@ categories: data-structure
 
 # Splittable Ring Buffer
 
-Splittable ring buffer is a ring buffer that can split into several parts. Each part is still a ring buffer.
+Splittable ring buffer is a ring buffer that can be split into several parts. Each part is still a ring buffer.
 
 ## Split Principal
 
-Writting of a ring buffer is usually by a continnously increasing index. Suppose the ring buffer to be split into *s* parts, then the reading of each split*<sub>i</sub>* needs a step of *n* and an offset of *i*, with *s* and *i* being *Z<sup>+</sup>*.
+Writting to a ring buffer is usually by a continnously increasing index. Suppose the ring buffer to be split into *s* parts, then the addressing of each split*<sub>i</sub>* needs a *step* of *n* and an *offset* of *i*, with both *s* and *i* belonging to *Z<sup>+</sup>*.
 
-For example, if the index = i, the data<sub>i</sub> can be write into memory[i], and the split<sub>i</sub> can read a new item, which values data<sub>i</sub>.
+For example, if the tail of the *split<sub>i</sub>* addresses *memory[p step + offset]*, with *p* belonging to *Z<sup>+</sup>*. Given *index = i*, a *data<sub>i</sub>* is write to *memory[i]*, then the *split<sub>i</sub>* gets a new item in *memory[(p+1) step + offset]*, which values *data<sub>i</sub>*.
 
-Specially, when the origin ring buffer's length is a power-2 number, *2<sup>r</sup>* for instance. And the split number *s* is also a power-2 number, 2*<sup>n</sup>* for instance, with *r* and *n* being *Z<sup>+</sup>* and *r >= n*. Then the ring buffer addressing can be achieved with just masking unsigned integer overflow.
+|      *memory*       | ...  |        *0*         |        *1*         | ...  |        *i*         | ...  |       *s-1*        | ...  |
+| :-----------------: | :--: | :----------------: | :----------------: | :--: | :----------------: | :--: | :----------------: | :--: |
+|       *index*       |      |                    |                    |      |        *i*         |      |                    |      |
+| *split<sub>0</sub>* | ...  | *data<sub>0</sub>* |                    |      |                    |      |                    | ...  |
+| *split<sub>1</sub>* | ...  |                    | *data<sub>1</sub>* |      |                    |      |                    | ...  |
+|         ...         | ...  |                    |                    | ...  |                    |      |                    | ...  |
+| *split<sub>i</sub>* | ...  |                    |                    |      | *data<sub>i</sub>* |      |                    | ...  |
+|         ...         | ...  |                    |                    |      |                    | ...  |                    | ...  |
+| *split<sub>s</sub>* | ...  |                    |                    |      |                    |      | *data<sub>s</sub>* | ...  |
 
-Then the split parts are all rings too.
+Specially, when the origin ring buffer's length is a power-2 number, *2<sup>r</sup>* for instance. And the split number *s* is also a power-2 number, 2*<sup>n</sup>* for instance, with both *r* and *n* belonging to *Z<sup>+</sup>* and *r >= n*. Then addressing of the ring buffer can be achieved with just masking *(2<sup>r-n</sup> step + offset)* overflow.
 
-|      memory       | ...  |        0         |       *1*        | ...  |       *i*        | ...  |      *s-1*       | ...  |
-| :---------------: | :--: | :--------------: | :--------------: | :--: | :--------------: | :--: | :--------------: | :--: |
-|       index       |      |                  |                  |      |        i         |      |                  |      |
-| split<sub>0</sub> | ...  | data<sub>0</sub> |                  |      |                  |      |                  | ...  |
-| split<sub>1</sub> | ...  |                  | data<sub>1</sub> |      |                  |      |                  | ...  |
-|        ...        | ...  |                  |                  | ...  |                  |      |                  | ...  |
-| split<sub>i</sub> | ...  |                  |                  |      | data<sub>i</sub> |      |                  | ...  |
-|        ...        | ...  |                  |                  |      |                  | ...  |                  | ...  |
-| split<sub>s</sub> | ...  |                  |                  |      |                  |      | data<sub>s</sub> | ...  |
+**Then the split parts are all rings too.**
 
-## Demo code
+## Demo Code
 
 Calculate *step* and *offset*, then split the ring buffer into *num* parts.
 
@@ -41,6 +41,75 @@ public void split(int num) {
     }
 }
 ```
+
+Write to buffer
+
+```java
+public Boolean offer(E element) {
+    if (isFull()) {
+        return null;
+    }
+    setElement(element);
+    stepWriteIndex();
+    return isFull();
+}
+```
+
+Read from buffer
+
+```java
+public E poll() {
+    if (isEmpty()) {
+        return null;
+    }
+    E element = getElement();
+    stepReadIndex();
+    return element;
+}
+```
+
+Relative codes
+
+```
+public static int smallestPow2GreaterThanOrEqualTo(int num) {
+    if ((num & (num - 1)) == 0) {
+        return num;
+    }
+    return smallestPow2GreaterThan(num);
+}
+
+private void setElement(E element) {
+    data[normalize(writeIndex)] = element;
+}
+
+private E getElement() {
+    return data[normalize(readIndex)];
+}
+
+private void stepWriteIndex() {
+    writeIndex += step;
+    readableLength++;
+}
+
+private void stepReadIndex() {
+    readIndex += step;
+    readableLength--;
+}
+
+private int normalize(int index) {
+    return index & mask;
+}
+
+private boolean isEmpty() {
+    return readableLength <= 0;
+}
+
+private boolean isFull() {
+    return readableLength >= length;
+}
+```
+
+
 
 ## Conclusion
 
