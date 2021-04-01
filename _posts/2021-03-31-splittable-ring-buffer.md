@@ -70,7 +70,7 @@ public E poll() {
 
 Relative codes
 
-```
+```java
 public static int smallestPow2GreaterThanOrEqualTo(int num) {
     if ((num & (num - 1)) == 0) {
         return num;
@@ -115,7 +115,7 @@ private boolean isFull() {
 
 Split mechanism separates a ring buffer into several parts, which can be read/write seperately. Some pingpong buffer can be designed based on this.
 
-## Referance
+## Referance 
 
 [Source code](https://github.com/zhang1career/javalab/blob/master/datastruct/src/main/java/datastruct/ringbuffer/SplittableRingBuffer.java)
 
