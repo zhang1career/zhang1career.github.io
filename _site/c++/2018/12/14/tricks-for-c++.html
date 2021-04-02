@@ -2,22 +2,24 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Tricks for C++ | zhang1career’s Blog</title>
-<meta name="generator" content="Jekyll v3.8.5" />
+<meta name="generator" content="Jekyll v4.2.0" />
 <meta property="og:title" content="Tricks for C++" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
 <meta property="og:description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
-<link rel="canonical" href="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" />
-<meta property="og:url" content="http://localhost:4000/c++/2018/12/14/tricks-for-c++.html" />
+<link rel="canonical" href="/c++/2018/12/14/tricks-for-c++.html" />
+<meta property="og:url" content="/c++/2018/12/14/tricks-for-c++.html" />
 <meta property="og:site_name" content="zhang1career’s Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2018-12-14T10:27:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Tricks for C++" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/c++/2018/12/14/tricks-for-c++.html","headline":"Tricks for C++","dateModified":"2018-12-14T10:27:00+08:00","datePublished":"2018-12-14T10:27:00+08:00","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/c++/2018/12/14/tricks-for-c++.html"},"@type":"BlogPosting","@context":"http://schema.org"}</script>
+{"datePublished":"2018-12-14T10:27:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"/c++/2018/12/14/tricks-for-c++.html"},"@type":"BlogPosting","url":"/c++/2018/12/14/tricks-for-c++.html","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","headline":"Tricks for C++","dateModified":"2018-12-14T10:27:00+08:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="zhang1career's Blog" /></head>
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="zhang1career's Blog" /></head>
 <body><header class="site-header" role="banner">
 
   <div class="wrapper"><a class="site-title" rel="author" href="/">zhang1career&#39;s Blog</a><nav class="site-nav">
@@ -49,16 +51,16 @@
 
 </blockquote>
 
-<h2 id="1-unordered_map">1. unordered_map<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup></h2>
+<h2 id="1-unordered_map">1. unordered_map<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup></h2>
 
-<h3 id="use-vector-as-key">use vector as key<sup id="fnref:n"><a href="#fn:n" class="footnote">2</a></sup></h3>
+<h3 id="use-vector-as-key">use vector as key<sup id="fnref:n" role="doc-noteref"><a href="#fn:n" class="footnote" rel="footnote">2</a></sup></h3>
 
 <p>When using vector<int> as key, definition of hash is needed.</int></p>
 
 <p>Define our hash function:</p>
 
-<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Container</span><span class="o">&gt;</span>
-<span class="k">struct</span> <span class="n">container_hash</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Container</span><span class="p">&gt;</span>
+<span class="k">struct</span> <span class="nc">container_hash</span> <span class="p">{</span>
     <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="k">operator</span><span class="p">()(</span><span class="n">Container</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">c</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
         <span class="k">return</span> <span class="n">boost</span><span class="o">::</span><span class="n">hash_range</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">c</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
     <span class="p">}</span>
@@ -73,13 +75,13 @@
 <figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">keyVector</span><span class="p">;</span></code></pre></figure>
 
 <h2 id="reference">Reference</h2>
-<div class="footnotes">
+<div class="footnotes" role="doc-endnotes">
   <ol>
-    <li id="fn:1">
-      <p>http://www.cplusplus.com/reference/unordered_map/unordered_map/ <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    <li id="fn:1" role="doc-endnote">
+      <p>http://www.cplusplus.com/reference/unordered_map/unordered_map/ <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
-    <li id="fn:n">
-      <p>https://stackoverflow.com/questions/10405030/c-unordered-map-fail-when-used-with-a-vector-as-key <a href="#fnref:n" class="reversefootnote">&#8617;</a></p>
+    <li id="fn:n" role="doc-endnote">
+      <p>https://stackoverflow.com/questions/10405030/c-unordered-map-fail-when-used-with-a-vector-as-key <a href="#fnref:n" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
   </ol>
 </div>

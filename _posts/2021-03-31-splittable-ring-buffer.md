@@ -3,8 +3,6 @@ title:  Splittable Ring Buffer
 date:   2021-03-31 16:52:00 +0800
 categories: data-structure
 
-
-
 # Splittable Ring Buffer
 
 Splittable ring buffer is a ring buffer that can be split into several parts. Each part is still a ring buffer.
@@ -108,8 +106,6 @@ private boolean isFull() {
     return readableLength >= length;
 }
 ```
-
-
 
 ## Conclusion
 

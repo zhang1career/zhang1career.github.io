@@ -2,22 +2,24 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Go 闭包何时计算 | zhang1career’s Blog</title>
-<meta name="generator" content="Jekyll v3.8.5" />
+<meta name="generator" content="Jekyll v4.2.0" />
 <meta property="og:title" content="Go 闭包何时计算" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
 <meta property="og:description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
-<link rel="canonical" href="http://localhost:4000/go/2019/04/30/when-does-a-go-closure-calc.html" />
-<meta property="og:url" content="http://localhost:4000/go/2019/04/30/when-does-a-go-closure-calc.html" />
+<link rel="canonical" href="/go/2019/04/30/when-does-a-go-closure-calc.html" />
+<meta property="og:url" content="/go/2019/04/30/when-does-a-go-closure-calc.html" />
 <meta property="og:site_name" content="zhang1career’s Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-04-30T22:35:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Go 闭包何时计算" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/go/2019/04/30/when-does-a-go-closure-calc.html","headline":"Go 闭包何时计算","dateModified":"2019-04-30T22:35:00+08:00","datePublished":"2019-04-30T22:35:00+08:00","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/go/2019/04/30/when-does-a-go-closure-calc.html"},"@type":"BlogPosting","@context":"http://schema.org"}</script>
+{"datePublished":"2019-04-30T22:35:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"/go/2019/04/30/when-does-a-go-closure-calc.html"},"@type":"BlogPosting","url":"/go/2019/04/30/when-does-a-go-closure-calc.html","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","headline":"Go 闭包何时计算","dateModified":"2019-04-30T22:35:00+08:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="zhang1career's Blog" /></head>
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="zhang1career's Blog" /></head>
 <body><header class="site-header" role="banner">
 
   <div class="wrapper"><a class="site-title" rel="author" href="/">zhang1career&#39;s Blog</a><nav class="site-nav">
@@ -52,7 +54,7 @@
 <h2 id="1-实现">1. 实现</h2>
 
 <p>直接上码：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func calcLate() []func()  {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func calcLate() []func()  {
     var funs []func()
     for i:=0; i&lt;2; i++  {
         funs = append(funs, func() {
@@ -75,19 +77,19 @@ func calcNow() []func()  {
 </code></pre></div></div>
 
 <p>测试代码：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>package main
  
-<span class="n">func</span> <span class="n">main</span><span class="p">(){</span>
-    <span class="n">funsLate</span> <span class="p">:=</span> <span class="n">calcLate</span><span class="p">()</span>
-    <span class="n">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">fl</span> <span class="p">:=</span> <span class="k">range</span> <span class="n">funsLate</span> <span class="p">{</span>
-        <span class="n">fl</span><span class="p">()</span>
-    <span class="p">}</span>
+func main(){
+    funsLate := calcLate()
+    for _, fl := range funsLate {
+        fl()
+    }
     
-    <span class="n">funsNow</span> <span class="p">:=</span> <span class="n">calcLate</span><span class="p">()</span>
-    <span class="n">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">fn</span> <span class="p">:=</span> <span class="k">range</span> <span class="n">funsNow</span> <span class="p">{</span>
-        <span class="n">fn</span><span class="p">()</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+    funsNow := calcLate()
+    for _, fn := range funsNow {
+        fn()
+    }
+}
 </code></pre></div></div>
 
   </div><a class="u-url" href="/go/2019/04/30/when-does-a-go-closure-calc.html" hidden></a>

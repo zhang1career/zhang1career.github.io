@@ -3,21 +3,21 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>如何选择可变管道 | zhang1career’s Blog</title>
+<title>流浪猫救助SOP | zhang1career’s Blog</title>
 <meta name="generator" content="Jekyll v4.2.0" />
-<meta property="og:title" content="如何选择可变管道" />
+<meta property="og:title" content="流浪猫救助SOP" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
 <meta property="og:description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
-<link rel="canonical" href="/go/2019/04/30/how-to-select-variadic-channel.html" />
-<meta property="og:url" content="/go/2019/04/30/how-to-select-variadic-channel.html" />
+<link rel="canonical" href="/animal/2019/07/28/how-to-save-a-cat.html" />
+<meta property="og:url" content="/animal/2019/07/28/how-to-save-a-cat.html" />
 <meta property="og:site_name" content="zhang1career’s Blog" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2019-04-30T20:30:00+08:00" />
+<meta property="article:published_time" content="2019-07-28T23:45:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="如何选择可变管道" />
+<meta property="twitter:title" content="流浪猫救助SOP" />
 <script type="application/ld+json">
-{"datePublished":"2019-04-30T20:30:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"/go/2019/04/30/how-to-select-variadic-channel.html"},"@type":"BlogPosting","url":"/go/2019/04/30/how-to-select-variadic-channel.html","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","headline":"如何选择可变管道","dateModified":"2019-04-30T20:30:00+08:00","@context":"https://schema.org"}</script>
+{"datePublished":"2019-07-28T23:45:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"/animal/2019/07/28/how-to-save-a-cat.html"},"@type":"BlogPosting","url":"/animal/2019/07/28/how-to-save-a-cat.html","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","headline":"流浪猫救助SOP","dateModified":"2019-07-28T23:45:00+08:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="zhang1career's Blog" /></head>
 <body><header class="site-header" role="banner">
@@ -40,9 +40,9 @@
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">如何选择可变管道</h1>
+    <h1 class="post-title p-name" itemprop="name headline">流浪猫救助SOP</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2019-04-30T20:30:00+08:00" itemprop="datePublished">Apr 30, 2019
+      <time class="dt-published" datetime="2019-07-28T23:45:00+08:00" itemprop="datePublished">Jul 28, 2019
       </time></p>
   </header>
 
@@ -51,75 +51,54 @@
 
 </blockquote>
 
-<h2 id="1-要点">1. 要点</h2>
-<ul>
-  <li>可变参数的接收[1]</li>
-  <li>递归 select</li>
-  <li>reflect.Select[2]</li>
-</ul>
+<h2 id="1-疾病诊治">1. 疾病诊治</h2>
 
-<h2 id="2-原理">2. 原理</h2>
+<h3 id="11-猫瘟">1.1. 猫瘟</h3>
+<p>症状：</p>
 
-<h3 id="21递归-select">2.1.递归 select</h3>
-<p>递归 select 属于运行时多态，可变管道是编译时多态。使用前者对后者予以降维打击</p>
+<p>检测方法：
+猫瘟试纸</p>
 
-<h3 id="22-reflectselect3">2.2. reflect.Select[3]</h3>
+<p>处置方法：
+服用抗生素
+注射蛋白</p>
 
-<p>使用到如下字段：
-Field  | Value | Meaning
-—— | —– | ——
-chosen |       | 通道序号
-recv   |       | 接收内容
-recvOK | true  | 通道正常工作
-       | false | 通道已经关闭</p>
+<h3 id="12-皮癣">1.2. 皮癣</h3>
 
-<h2 id="3-示例">3. 示例</h2>
+<h2 id="一般处置方法">一般处置方法</h2>
+<h3 id="入户的适应">入户的适应</h3>
+<p>进家门后，首先喂一口营养膏</p>
 
-<h3 id="32-reflectselect">3.2. reflect.Select</h3>
+<h2 id="备用物品">备用物品</h2>
+<p>笼子
+厚长袖手套</p>
 
-<p>代码如下：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import (
-    "fmt"
-    "reflect"
-)
- 
-func Mux(out chan&lt;- interface{}, varIns ...&lt;-chan interface{}) {
-    ins := make([]&lt;-chan interface{}, 0)
-    if len(varIns) &gt; 0 {
-       for _, in := range varIns {
-          ins = append(ins, in)
-       }
-    }
-    
-    cases := make([]reflect.SelectCase, len(ins))
-    for i, in := range ins {
-        cases[i] = reflect.SelectCase{Dir: reflect.SelectRecv, Chan: reflect.ValueOf(in)}
-    }
-    
-    remaining := len(cases)
-    for remaining &gt; 0 {
-        chosen, value, ok := reflect.Select(cases)
-        // The chosen channel has been closed, so zero out the channel to disable the case
-        if !ok {
-            cases[chosen].Chan = reflect.ValueOf(nil)
-            remaining -= 1
-            continue
-        }
-        fmt.Printf("Channel%#v: %s\n", ins[chosen], value.String())
-        out &lt;- value
-    }
-}
-</code></pre></div></div>
+<p>尿垫
+奶粉
+营养膏
+肉罐头</p>
 
-<h2 id="a-参考">A. 参考</h2>
-<ol>
-  <li><a href="https://zhagn1career.github.io/go/2019/02/14/how-to-handle-variadic-function.html">如何实现变参函数</a></li>
-  <li><a href="https://stackoverflow.com/questions/19992334/how-to-listen-to-n-channels-dynamic-select-statement">You Should use reflect.Select</a></li>
-  <li><a href="https://golang.org/pkg/reflect/#Select">reflect.Select</a></li>
-  <li><a href="http://tevic.github.io/2016/05/10/select-case/">使用SelectCase来做不定数量的channel选择</a></li>
-</ol>
+<p>益生菌
+牙洁粉</p>
 
-  </div><a class="u-url" href="/go/2019/04/30/how-to-select-variadic-channel.html" hidden></a>
+<h3 id="卫生防疫">卫生防疫</h3>
+<p>猫瘟(FPV)试纸
+猫鼻支试纸</p>
+
+<p>消毒水</p>
+
+<p>体内驱虫药</p>
+
+<p>体外驱虫药</p>
+
+<p>口服抗生素
+红霉素软膏</p>
+
+<p>猫三联
+氧氟沙星滴眼液
+狂犬疫苗</p>
+
+  </div><a class="u-url" href="/animal/2019/07/28/how-to-save-a-cat.html" hidden></a>
 </article>
 
       </div>
