@@ -2,7 +2,7 @@
 layout: post
 title:  洗牌算法原理及实现
 date:   2019-05-06 23:40:00 +0800
-categories: study-a-shuffle-algorithm
+categories: algorithm
 ---
 
 > 

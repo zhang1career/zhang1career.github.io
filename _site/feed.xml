@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-04-02T09:25:53+08:00</updated><id>/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Splittable Ring Buffer</title><link href="/2021/03/31/splittable-ring-buffer.html" rel="alternate" type="text/html" title="Splittable Ring Buffer" /><published>2021-03-31T00:00:00+08:00</published><updated>2021-03-31T00:00:00+08:00</updated><id>/2021/03/31/splittable-ring-buffer</id><content type="html" xml:base="/2021/03/31/splittable-ring-buffer.html">&lt;p&gt;layout: post
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-04-02T10:52:05+08:00</updated><id>/feed.xml</id><title type="html">zhang1career’s Blog</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><entry><title type="html">Splittable Ring Buffer</title><link href="/2021/03/31/splittable-ring-buffer.html" rel="alternate" type="text/html" title="Splittable Ring Buffer" /><published>2021-03-31T00:00:00+08:00</published><updated>2021-03-31T00:00:00+08:00</updated><id>/2021/03/31/splittable-ring-buffer</id><content type="html" xml:base="/2021/03/31/splittable-ring-buffer.html">&lt;p&gt;layout: post
 title:  Splittable Ring Buffer
 date:   2021-03-31 16:52:00 +0800
-categories: data-structure&lt;/p&gt;
+categories: algorithm&lt;/p&gt;
 
 &lt;h1 id=&quot;splittable-ring-buffer&quot;&gt;Splittable Ring Buffer&lt;/h1&gt;
 
@@ -194,7 +194,7 @@ categories: data-structure&lt;/p&gt;
 
 &lt;h2 id=&quot;referance&quot;&gt;Referance&lt;/h2&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zhang1career/javalab/blob/master/datastruct/src/main/java/datastruct/ringbuffer/SplittableRingBuffer.java&quot;&gt;Source code&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">layout: post title: Splittable Ring Buffer date: 2021-03-31 16:52:00 +0800 categories: data-structure</summary></entry><entry><title type="html">Server端UI层设计思想</title><link href="/ui/2019/08/24/design-a-ui-server.html" rel="alternate" type="text/html" title="Server端UI层设计思想" /><published>2019-08-24T20:05:00+08:00</published><updated>2019-08-24T20:05:00+08:00</updated><id>/ui/2019/08/24/design-a-ui-server</id><content type="html" xml:base="/ui/2019/08/24/design-a-ui-server.html">&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zhang1career/javalab/blob/master/datastruct/src/main/java/datastruct/ringbuffer/SplittableRingBuffer.java&quot;&gt;Source code&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">layout: post title: Splittable Ring Buffer date: 2021-03-31 16:52:00 +0800 categories: algorithm</summary></entry><entry><title type="html">Server端UI层设计思想</title><link href="/design/ui/2019/08/24/design-a-ui-server.html" rel="alternate" type="text/html" title="Server端UI层设计思想" /><published>2019-08-24T20:05:00+08:00</published><updated>2019-08-24T20:05:00+08:00</updated><id>/design/ui/2019/08/24/design-a-ui-server</id><content type="html" xml:base="/design/ui/2019/08/24/design-a-ui-server.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -250,7 +250,7 @@ categories: data-structure&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://infinum.co/the-capsized-eight/building-modular-ui-with-server-driven-rendering&quot;&gt;Building a modular UI with server-driven rendering&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://blog.webix.com/client-side-vs-server-side-ui-rendering&quot;&gt;Client Side vs Server Side UI Rendering. Advantages and Disadvantages&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><category term="ui" /><summary type="html"></summary></entry><entry><title type="html">流浪猫救助SOP</title><link href="/animal/2019/07/28/how-to-save-a-cat.html" rel="alternate" type="text/html" title="流浪猫救助SOP" /><published>2019-07-28T23:45:00+08:00</published><updated>2019-07-28T23:45:00+08:00</updated><id>/animal/2019/07/28/how-to-save-a-cat</id><content type="html" xml:base="/animal/2019/07/28/how-to-save-a-cat.html">&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://blog.webix.com/client-side-vs-server-side-ui-rendering&quot;&gt;Client Side vs Server Side UI Rendering. Advantages and Disadvantages&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><category term="design" /><category term="ui" /><summary type="html"></summary></entry><entry><title type="html">流浪猫救助SOP</title><link href="/animal/2019/07/28/how-to-save-a-cat.html" rel="alternate" type="text/html" title="流浪猫救助SOP" /><published>2019-07-28T23:45:00+08:00</published><updated>2019-07-28T23:45:00+08:00</updated><id>/animal/2019/07/28/how-to-save-a-cat</id><content type="html" xml:base="/animal/2019/07/28/how-to-save-a-cat.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -299,7 +299,7 @@ categories: data-structure&lt;/p&gt;
 
 &lt;p&gt;猫三联
 氧氟沙星滴眼液
-狂犬疫苗&lt;/p&gt;</content><author><name></name></author><category term="animal" /><summary type="html"></summary></entry><entry><title type="html">洗牌算法原理及实现</title><link href="/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html" rel="alternate" type="text/html" title="洗牌算法原理及实现" /><published>2019-05-06T23:40:00+08:00</published><updated>2019-05-06T23:40:00+08:00</updated><id>/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm</id><content type="html" xml:base="/study-a-shuffle-algorithm/2019/05/06/study-a-shuffle-algorithm.html">&lt;blockquote&gt;
+狂犬疫苗&lt;/p&gt;</content><author><name></name></author><category term="animal" /><summary type="html"></summary></entry><entry><title type="html">洗牌算法原理及实现</title><link href="/algorithm/2019/05/06/study-a-shuffle-algorithm.html" rel="alternate" type="text/html" title="洗牌算法原理及实现" /><published>2019-05-06T23:40:00+08:00</published><updated>2019-05-06T23:40:00+08:00</updated><id>/algorithm/2019/05/06/study-a-shuffle-algorithm</id><content type="html" xml:base="/algorithm/2019/05/06/study-a-shuffle-algorithm.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -363,7 +363,7 @@ categories: data-structure&lt;/p&gt;
 	
 	&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><category term="study-a-shuffle-algorithm" /><summary type="html"></summary></entry><entry><title type="html">设计点赞系统</title><link href="/design-a-system/2019/05/05/design-a-like-system.html" rel="alternate" type="text/html" title="设计点赞系统" /><published>2019-05-05T23:50:00+08:00</published><updated>2019-05-05T23:50:00+08:00</updated><id>/design-a-system/2019/05/05/design-a-like-system</id><content type="html" xml:base="/design-a-system/2019/05/05/design-a-like-system.html">&lt;blockquote&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><category term="algorithm" /><summary type="html"></summary></entry><entry><title type="html">设计点赞系统</title><link href="/design/2019/05/05/design-a-like-system.html" rel="alternate" type="text/html" title="设计点赞系统" /><published>2019-05-05T23:50:00+08:00</published><updated>2019-05-05T23:50:00+08:00</updated><id>/design/2019/05/05/design-a-like-system</id><content type="html" xml:base="/design/2019/05/05/design-a-like-system.html">&lt;blockquote&gt;
 
 &lt;/blockquote&gt;
 
@@ -384,7 +384,7 @@ categories: data-structure&lt;/p&gt;
 &lt;h2 id=&quot;a-名词解释&quot;&gt;A. 名词解释&lt;/h2&gt;
 &lt;ul&gt;
   &lt;li&gt;点赞信息：包括 like/unlike 计数、计数时间、此用户对目标的 like/unlike 状态&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><category term="design-a-system" /><summary type="html"></summary></entry><entry><title type="html">如何实现真正异步读写的管道</title><link href="/go/2019/05/03/how-to-fire-and-forget-a-channel.html" rel="alternate" type="text/html" title="如何实现真正异步读写的管道" /><published>2019-05-03T18:00:00+08:00</published><updated>2019-05-03T18:00:00+08:00</updated><id>/go/2019/05/03/how-to-fire-and-forget-a-channel</id><content type="html" xml:base="/go/2019/05/03/how-to-fire-and-forget-a-channel.html">&lt;blockquote&gt;
+&lt;/ul&gt;</content><author><name></name></author><category term="design" /><summary type="html"></summary></entry><entry><title type="html">如何实现真正异步读写的管道</title><link href="/go/2019/05/03/how-to-fire-and-forget-a-channel.html" rel="alternate" type="text/html" title="如何实现真正异步读写的管道" /><published>2019-05-03T18:00:00+08:00</published><updated>2019-05-03T18:00:00+08:00</updated><id>/go/2019/05/03/how-to-fire-and-forget-a-channel</id><content type="html" xml:base="/go/2019/05/03/how-to-fire-and-forget-a-channel.html">&lt;blockquote&gt;
   &lt;p&gt;使用管道并不轻松。无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。
 本文提出一种无阻塞读写的管道。&lt;/p&gt;
 &lt;/blockquote&gt;

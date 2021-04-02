@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Enviroment Settings – Tools | zhang1career’s Blog</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="Enviroment Settings – Tools" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
+<meta property="og:description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
+<link rel="canonical" href="/environment/2018/11/24/enviroment-settings-tools.html" />
+<meta property="og:url" content="/environment/2018/11/24/enviroment-settings-tools.html" />
+<meta property="og:site_name" content="zhang1career’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-11-24T22:51:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Enviroment Settings – Tools" />
+<script type="application/ld+json">
+{"datePublished":"2018-11-24T22:51:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"/environment/2018/11/24/enviroment-settings-tools.html"},"@type":"BlogPosting","url":"/environment/2018/11/24/enviroment-settings-tools.html","description":"Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.","headline":"Enviroment Settings – Tools","dateModified":"2018-11-24T22:51:00+08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="zhang1career's Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">zhang1career&#39;s Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Enviroment Settings -- Tools</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-11-24T22:51:00+08:00" itemprop="datePublished">Nov 24, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <blockquote>
+
+</blockquote>
+
+<h2 id="1-shell-tools">1. Shell Tools</h2>
+
+<h3 id="ssh-登录">Ssh 登录</h3>
+<p>Ssh命令的不便在于，参数 <code class="language-plaintext highlighter-rouge">PreferredAuthentications</code> 过长；连接目标的名称包含数字，抽象且多变。这两点都不便于记忆。现将ssh命令分为动作 <code class="language-plaintext highlighter-rouge">jump</code> 和目标 <code class="language-plaintext highlighter-rouge">foo-bar</code> 两部分，组合使用。</p>
+
+<ul>
+  <li>jump</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#!/bin/bash</span>
+ssh <span class="nt">-o</span> <span class="nv">PreferredAuthentications</span><span class="o">=</span>password <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$2</span><span class="s2">"</span></code></pre></figure>
+
+<ul>
+  <li>foo-bar</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">foo-bar<span class="o">()</span> <span class="o">{</span>
+  <span class="nb">echo</span> <span class="s1">'foo@111.222.333.444'</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><strong>使用示例</strong></p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">jump <span class="si">$(</span>foo-bar<span class="si">)</span></code></pre></figure>
+
+<h2 id="2-php-tools">2. PHP Tools</h2>
+<p>点击参考<a href="https://github.com/zhang1career/mytools">源码</a></p>
+
+<h3 id="工具准备">工具准备</h3>
+<p>使用 <code class="language-plaintext highlighter-rouge">Symfony/Component/Console/Application</code> 搭建 PHP 命令行工具 <code class="language-plaintext highlighter-rouge">mit</code>，定义具体功能的基类 <code class="language-plaintext highlighter-rouge">Tool</code>。</p>
+
+<ul>
+  <li>mit</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="nv">$app</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Application</span><span class="p">(</span><span class="nv">$config</span><span class="p">[</span><span class="s1">'info'</span><span class="p">][</span><span class="s1">'app'</span><span class="p">],</span> <span class="nv">$config</span><span class="p">[</span><span class="s1">'info'</span><span class="p">][</span><span class="s1">'version'</span><span class="p">]);</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="nf">add</span><span class="p">(</span><span class="k">new</span> <span class="nc">SomeTool</span><span class="p">());</span>
+<span class="k">try</span> <span class="p">{</span>
+    <span class="nv">$app</span><span class="o">-&gt;</span><span class="nf">run</span><span class="p">();</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nc">Exception</span> <span class="nv">$e</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nb">printf</span><span class="p">(</span><span class="nv">$e</span><span class="o">-&gt;</span><span class="nf">getMessage</span><span class="p">());</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<ul>
+  <li>Tool</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="kd">class</span> <span class="nc">Tools</span> <span class="kd">extends</span> <span class="nc">Command</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="n">execute</span><span class="p">(</span><span class="kt">InputInterface</span> <span class="nv">$input</span><span class="p">,</span> <span class="kt">OutputInterface</span> <span class="nv">$output</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// get argument values</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">args</span> <span class="o">=</span> <span class="nv">$input</span><span class="o">-&gt;</span><span class="nf">getArguments</span><span class="p">();</span>
+        <span class="c1">// get action</span>
+        <span class="nv">$action</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">namepath</span> <span class="mf">.</span> <span class="s1">'\\'</span> <span class="mf">.</span> <span class="nb">UCFirst</span><span class="p">(</span><span class="nb">strtolower</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="nf">getArgument</span><span class="p">(</span><span class="s1">'action'</span><span class="p">)));</span>
+        <span class="cd">/** @var CommandInterface $obj */</span>
+        <span class="nv">$obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nv">$action</span><span class="p">();</span>
+        <span class="nv">$value</span> <span class="o">=</span> <span class="nv">$obj</span><span class="o">-&gt;</span><span class="nf">run</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="n">args</span><span class="p">);</span>
+        <span class="nv">$output</span><span class="o">-&gt;</span><span class="nf">writeln</span><span class="p">(</span><span class="s2">"&lt;info&gt;</span><span class="nv">$value</span><span class="s2">&lt;/info&gt;"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="lnmp-管理">LNMP 管理</h3>
+<p>定义 LNMP 管理的子类 <code class="language-plaintext highlighter-rouge">lnmp</code>，以及具体动作 <code class="language-plaintext highlighter-rouge">start</code>。</p>
+
+<ul>
+  <li>lnmp</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="kd">class</span> <span class="nc">Lnmp</span> <span class="kd">extends</span> <span class="nc">Tools</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="nv">$NAME</span> <span class="o">=</span> <span class="s1">'lnmp'</span><span class="p">;</span>
+    <span class="k">static</span> <span class="nv">$DESCRIPTION</span> <span class="o">=</span> <span class="s1">'Start LNMP services.'</span><span class="p">;</span>
+    <span class="k">static</span> <span class="nv">$ARGUMENTS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'action'</span><span class="p">,</span>
+            <span class="s1">'mode'</span> <span class="o">=&gt;</span> <span class="nc">InputArgument</span><span class="o">::</span><span class="no">REQUIRED</span><span class="p">,</span>
+            <span class="s1">'description'</span> <span class="o">=&gt;</span> <span class="s1">'Action the lnmp does, i.e. start, stop, restart'</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">];</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="n">__construct</span><span class="p">(</span><span class="nv">$name</span> <span class="o">=</span> <span class="kc">null</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">parent</span><span class="o">::</span><span class="nf">__construct</span><span class="p">(</span><span class="nv">$name</span><span class="p">);</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">namepath</span> <span class="o">=</span> <span class="k">__NAMESPACE__</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<ul>
+  <li>start</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="kd">class</span> <span class="nc">Start</span> <span class="kd">implements</span> <span class="nc">CommandInterface</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="n">run</span><span class="p">(</span><span class="kt">array</span> <span class="nv">$args</span> <span class="o">=</span> <span class="p">[])</span>
+    <span class="p">{</span>
+        <span class="c1">// create logs folder</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="nb">mkdir</span><span class="p">(</span><span class="s1">'/tmp/logs/nginx'</span><span class="p">);</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="nb">mkdir</span><span class="p">(</span><span class="s1">'/tmp/logs/php'</span><span class="p">);</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="nb">mkdir</span><span class="p">(</span><span class="s1">'/tmp/logs/redis'</span><span class="p">);</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="nb">mkdir</span><span class="p">(</span><span class="s1">'/tmp/logs/risk-engine'</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nc">Exception</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nv">$e</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="c1">// start nginx</span>
+        <span class="nb">exec</span><span class="p">(</span><span class="s2">"pgrep nginx"</span><span class="p">,</span> <span class="nv">$output</span><span class="p">,</span> <span class="nv">$err</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$err</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nb">exec</span><span class="p">(</span><span class="s1">'sudo nginx'</span><span class="p">,</span> <span class="nv">$output</span><span class="p">,</span> <span class="nv">$err</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nb">exec</span><span class="p">(</span><span class="s1">'sudo nginx -s reload'</span><span class="p">,</span> <span class="nv">$output</span><span class="p">,</span> <span class="nv">$err</span><span class="p">);</span>
+        <span class="p">}</span>
+    
+        <span class="c1">// start php-fpm</span>
+        <span class="nb">exec</span><span class="p">(</span><span class="s1">'launchctl unload -w /path/to/php.plist'</span><span class="p">,</span> <span class="nv">$output</span><span class="p">,</span> <span class="nv">$err</span><span class="p">);</span>
+        <span class="nb">exec</span><span class="p">(</span><span class="s1">'launchctl load   -w /path/to/php.plist'</span><span class="p">,</span> <span class="nv">$output</span><span class="p">,</span> <span class="nv">$err</span><span class="p">);</span>
+    
+        <span class="k">return</span> <span class="nv">$err</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><strong>使用示例</strong>：</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">mit lnmp start</code></pre></figure>
+
+
+  </div><a class="u-url" href="/environment/2018/11/24/enviroment-settings-tools.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">zhang1career&#39;s Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">zhang1career&#39;s Blog</li><li><a class="u-email" href="mailto:rongjin.zh@gmail.com">rongjin.zh@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

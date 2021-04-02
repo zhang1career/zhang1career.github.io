@@ -2,7 +2,7 @@
 layout: post
 title:  Server端UI层设计思想
 date:   2019-08-24 20:05:00 +0800
-categories: ui
+categories: design ui
 ---
 
 > 

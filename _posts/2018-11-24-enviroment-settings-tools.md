@@ -2,7 +2,7 @@
 layout: post
 title:  Enviroment Settings -- Tools
 date:   2018-11-24 22:51:00 +0800
-categories: 环境设置
+categories: environment
 ---
 
 > 
@@ -117,11 +117,11 @@ class Start implements CommandInterface
         } else {
             exec('sudo nginx -s reload', $output, $err);
         }
-
+    
         // start php-fpm
         exec('launchctl unload -w /path/to/php.plist', $output, $err);
         exec('launchctl load   -w /path/to/php.plist', $output, $err);
-
+    
         return $err;
     }
 }

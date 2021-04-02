@@ -2,7 +2,7 @@
 layout: post
 title:  设计点赞系统
 date:   2019-05-05 23:50:00 +0800
-categories: design-a-system
+categories: design
 ---
 
 > 
