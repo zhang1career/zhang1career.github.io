@@ -34,4 +34,3 @@ plugins:
 exclude:
   - Gemfile
   - Gemfile.lock
-  - _drafts/
