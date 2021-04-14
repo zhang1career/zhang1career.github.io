@@ -7,8 +7,8 @@
 <meta name="generator" content="Jekyll v4.2.0" />
 <meta property="og:title" content="协程的可观测性——协程如何传出运行信息" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。" />
-<meta property="og:description" content="协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。" />
+<meta name="description" content="协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。本文提出一种协程传出运行信息的方法。" />
+<meta property="og:description" content="协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。本文提出一种协程传出运行信息的方法。" />
 <link rel="canonical" href="/go/2019/05/03/how-to-observe-a-goroutine.html" />
 <meta property="og:url" content="/go/2019/05/03/how-to-observe-a-goroutine.html" />
 <meta property="og:site_name" content="zhang1career’s Blog" />
@@ -17,7 +17,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="协程的可观测性——协程如何传出运行信息" />
 <script type="application/ld+json">
-{"@type":"BlogPosting","url":"/go/2019/05/03/how-to-observe-a-goroutine.html","description":"协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。","headline":"协程的可观测性——协程如何传出运行信息","dateModified":"2019-05-03T17:20:00+08:00","datePublished":"2019-05-03T17:20:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"/go/2019/05/03/how-to-observe-a-goroutine.html"},"@context":"https://schema.org"}</script>
+{"headline":"协程的可观测性——协程如何传出运行信息","dateModified":"2019-05-03T17:20:00+08:00","datePublished":"2019-05-03T17:20:00+08:00","description":"协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。本文提出一种协程传出运行信息的方法。","@type":"BlogPosting","url":"/go/2019/05/03/how-to-observe-a-goroutine.html","mainEntityOfPage":{"@type":"WebPage","@id":"/go/2019/05/03/how-to-observe-a-goroutine.html"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="zhang1career's Blog" /></head>
 <body><header class="site-header" role="banner">
@@ -48,10 +48,13 @@
 
   <div class="post-content e-content" itemprop="articleBody">
     <blockquote>
-  <p>协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。但是协程外部如何获得协程运行信息，目前鲜有资讯提及。本文提出一种协程传出运行信息的方法。</p>
+  <p>协程可以由管道从外部进行控制，控制的依据一般是协程运行信息。本文提出一种协程传出运行信息的方法。</p>
 </blockquote>
 
+<h1 id="协程的可观测性协程如何传出运行信息">协程的可观测性——协程如何传出运行信息</h1>
+
 <h2 id="1-要点">1. 要点</h2>
+
 <ul>
   <li>基于 context.Context 的 key-value，实现协程传出运行信息的功能</li>
 </ul>

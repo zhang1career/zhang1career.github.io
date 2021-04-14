@@ -3,21 +3,21 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>如何实现真正异步读写的管道 | zhang1career’s Blog</title>
+<title>真·异步读写管道 | zhang1career’s Blog</title>
 <meta name="generator" content="Jekyll v4.2.0" />
-<meta property="og:title" content="如何实现真正异步读写的管道" />
+<meta property="og:title" content="真·异步读写管道" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="使用管道并不轻松。无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。 本文提出一种无阻塞读写的管道。" />
-<meta property="og:description" content="使用管道并不轻松。无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。 本文提出一种无阻塞读写的管道。" />
-<link rel="canonical" href="/go/2019/05/03/how-to-fire-and-forget-a-channel.html" />
-<meta property="og:url" content="/go/2019/05/03/how-to-fire-and-forget-a-channel.html" />
+<meta name="description" content="无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。本文提出一种无阻塞读写的管道。" />
+<meta property="og:description" content="无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。本文提出一种无阻塞读写的管道。" />
+<link rel="canonical" href="/go/2019/05/03/%E7%9C%9F-%E5%BC%82%E6%AD%A5%E8%AF%BB%E5%86%99%E7%AE%A1%E9%81%93.html" />
+<meta property="og:url" content="/go/2019/05/03/%E7%9C%9F-%E5%BC%82%E6%AD%A5%E8%AF%BB%E5%86%99%E7%AE%A1%E9%81%93.html" />
 <meta property="og:site_name" content="zhang1career’s Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-05-03T18:00:00+08:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="如何实现真正异步读写的管道" />
+<meta property="twitter:title" content="真·异步读写管道" />
 <script type="application/ld+json">
-{"@type":"BlogPosting","url":"/go/2019/05/03/how-to-fire-and-forget-a-channel.html","description":"使用管道并不轻松。无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。 本文提出一种无阻塞读写的管道。","headline":"如何实现真正异步读写的管道","dateModified":"2019-05-03T18:00:00+08:00","datePublished":"2019-05-03T18:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"/go/2019/05/03/how-to-fire-and-forget-a-channel.html"},"@context":"https://schema.org"}</script>
+{"headline":"真·异步读写管道","dateModified":"2019-05-03T18:00:00+08:00","datePublished":"2019-05-03T18:00:00+08:00","description":"无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。本文提出一种无阻塞读写的管道。","@type":"BlogPosting","url":"/go/2019/05/03/%E7%9C%9F-%E5%BC%82%E6%AD%A5%E8%AF%BB%E5%86%99%E7%AE%A1%E9%81%93.html","mainEntityOfPage":{"@type":"WebPage","@id":"/go/2019/05/03/%E7%9C%9F-%E5%BC%82%E6%AD%A5%E8%AF%BB%E5%86%99%E7%AE%A1%E9%81%93.html"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="zhang1career's Blog" /></head>
 <body><header class="site-header" role="banner">
@@ -40,7 +40,7 @@
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">如何实现真正异步读写的管道</h1>
+    <h1 class="post-title p-name" itemprop="name headline">真·异步读写管道</h1>
     <p class="post-meta">
       <time class="dt-published" datetime="2019-05-03T18:00:00+08:00" itemprop="datePublished">May 3, 2019
       </time></p>
@@ -48,19 +48,21 @@
 
   <div class="post-content e-content" itemprop="articleBody">
     <blockquote>
-  <p>使用管道并不轻松。无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。
-本文提出一种无阻塞读写的管道。</p>
+  <p>无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。本文提出一种无阻塞读写的管道。</p>
 </blockquote>
 
+<h1 id="真异步读写管道">真·异步读写管道</h1>
+
 <h2 id="1-要点">1. 要点</h2>
+
 <ul>
-  <li>由程序逻辑实现在二个管道。一个只写，一个只读；二者异步操作[1]</li>
+  <li>由程序逻辑实现在两个管道。一个只写，一个只读；二者异步操作[1]</li>
   <li>提供 fire-and-forget 特性。降低应用开发难度；受到缓存深度影响，写入数据可能丢失</li>
 </ul>
 
 <h2 id="2-原理">2. 原理</h2>
 <ul>
-  <li>创建二个管道。一个只写（in 管道），一个只读（out 管道）</li>
+  <li>创建两个管道。一个只写（in 管道），一个只读（out 管道）</li>
   <li>监听 in 管道。把数据放入缓存；如果缓存满了就删除最老的数据，写入最新的数据</li>
   <li>监听 out 管道。输出缓存数据；如果缓存空了就不操作</li>
 </ul>
@@ -179,7 +181,7 @@ func (this *infinite) transceive() {
   <li><a href="https://medium.com/capital-one-tech/building-an-unbounded-channel-in-go-789e175cd2cd">Building an Unbounded Channel in Go</a></li>
 </ol>
 
-  </div><a class="u-url" href="/go/2019/05/03/how-to-fire-and-forget-a-channel.html" hidden></a>
+  </div><a class="u-url" href="/go/2019/05/03/%E7%9C%9F-%E5%BC%82%E6%AD%A5%E8%AF%BB%E5%86%99%E7%AE%A1%E9%81%93.html" hidden></a>
 </article>
 
       </div>
