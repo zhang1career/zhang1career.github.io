@@ -15,7 +15,7 @@ categories: go
 ## 2. 实现
 
 代码如下：
-```
+```go
 sn1 := struct {
     age  int
     name string
@@ -32,3 +32,4 @@ if reflect.DeepEqual(sn1, sn2) {
 } else {
     fmt.Println("sn1 != sn2")
 ```
+

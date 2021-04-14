@@ -33,7 +33,7 @@ recvOK | true  | 通道正常工作
 ### 3.2. reflect.Select
 
 代码如下：
-```
+```go
 import (
     "fmt"
     "reflect"

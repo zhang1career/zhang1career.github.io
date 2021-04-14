@@ -15,7 +15,7 @@ categories: go
 ## 2. 实现
 
 代码如下：
-```
+```go
 type KV struct {
     Key: int
     Value: interface{}
@@ -37,3 +37,4 @@ func SortMap(m map[int]interface{}) []KV {
     return ret
 }
 ```
+

@@ -3,7 +3,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>真·异步读写管道 | zhang1career’s Blog</title>
+<title>真·异步读写管道 | Rongjin Zhang’s Blog</title>
 <meta name="generator" content="Jekyll v4.2.0" />
 <meta property="og:title" content="真·异步读写管道" />
 <meta property="og:locale" content="en_US" />
@@ -11,7 +11,7 @@
 <meta property="og:description" content="无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。本文提出一种无阻塞读写的管道。" />
 <link rel="canonical" href="/go/2019/05/03/%E7%9C%9F-%E5%BC%82%E6%AD%A5%E8%AF%BB%E5%86%99%E7%AE%A1%E9%81%93.html" />
 <meta property="og:url" content="/go/2019/05/03/%E7%9C%9F-%E5%BC%82%E6%AD%A5%E8%AF%BB%E5%86%99%E7%AE%A1%E9%81%93.html" />
-<meta property="og:site_name" content="zhang1career’s Blog" />
+<meta property="og:site_name" content="Rongjin Zhang’s Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-05-03T18:00:00+08:00" />
 <meta name="twitter:card" content="summary" />
@@ -19,10 +19,10 @@
 <script type="application/ld+json">
 {"headline":"真·异步读写管道","dateModified":"2019-05-03T18:00:00+08:00","datePublished":"2019-05-03T18:00:00+08:00","description":"无缓存管道要求写入和读取的同步配合；缓存管道受到缓存深度影响，依然可能造成管道阻塞。本文提出一种无阻塞读写的管道。","@type":"BlogPosting","url":"/go/2019/05/03/%E7%9C%9F-%E5%BC%82%E6%AD%A5%E8%AF%BB%E5%86%99%E7%AE%A1%E9%81%93.html","mainEntityOfPage":{"@type":"WebPage","@id":"/go/2019/05/03/%E7%9C%9F-%E5%BC%82%E6%AD%A5%E8%AF%BB%E5%86%99%E7%AE%A1%E9%81%93.html"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="zhang1career's Blog" /></head>
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Rongjin Zhang's Blog" /></head>
 <body><header class="site-header" role="banner">
 
-  <div class="wrapper"><a class="site-title" rel="author" href="/">zhang1career&#39;s Blog</a><nav class="site-nav">
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Rongjin Zhang&#39;s Blog</a><nav class="site-nav">
         <input type="checkbox" id="nav-trigger" class="nav-trigger" />
         <label for="nav-trigger">
           <span class="menu-icon">
@@ -69,111 +69,111 @@
 
 <h2 id="3-实现">3. 实现</h2>
 <p>代码如下：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type infinite struct {
-    in          chan interface{}
-    out         chan interface{}
-    buffer      []interface{}
-    bufLength   int
-}
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">infinite</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">in</span>          <span class="k">chan</span> <span class="k">interface</span><span class="p">{}</span>
+    <span class="n">out</span>         <span class="k">chan</span> <span class="k">interface</span><span class="p">{}</span>
+    <span class="n">buffer</span>      <span class="p">[]</span><span class="k">interface</span><span class="p">{}</span>
+    <span class="n">bufLength</span>   <span class="kt">int</span>
+<span class="p">}</span>
  
-func NewInfinite(length int) (chan&lt;- interface{}, &lt;-chan interface{}, error) {
-    if length &lt;= 0 {
-        return nil, nil, fmt.Errorf("length should be natural number")
-    }
+<span class="k">func</span> <span class="n">NewInfinite</span><span class="p">(</span><span class="n">length</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="k">chan</span><span class="o">&lt;-</span> <span class="k">interface</span><span class="p">{},</span> <span class="o">&lt;-</span><span class="k">chan</span> <span class="k">interface</span><span class="p">{},</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;=</span> <span class="m">0</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="no">nil</span><span class="p">,</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"length should be natural number"</span><span class="p">)</span>
+    <span class="p">}</span>
     
-    item := &amp;infinite{
-        in     : make(chan interface{}),
-        out    : make(chan interface{}),
-        buffer : make([]interface{}, 0),
-        bufLength : length,
-    }
+    <span class="n">item</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">infinite</span><span class="p">{</span>
+        <span class="n">in</span>     <span class="o">:</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="k">interface</span><span class="p">{}),</span>
+        <span class="n">out</span>    <span class="o">:</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="k">interface</span><span class="p">{}),</span>
+        <span class="n">buffer</span> <span class="o">:</span> <span class="nb">make</span><span class="p">([]</span><span class="k">interface</span><span class="p">{},</span> <span class="m">0</span><span class="p">),</span>
+        <span class="n">bufLength</span> <span class="o">:</span> <span class="n">length</span><span class="p">,</span>
+    <span class="p">}</span>
     
-    go func() {
-        defer close(item.out)
-        item.transceive()
-    }()
+    <span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">defer</span> <span class="nb">close</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">transceive</span><span class="p">()</span>
+    <span class="p">}()</span>
     
-   return item.in, item.out, nil
-}
+   <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">in</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">out</span><span class="p">,</span> <span class="no">nil</span>
+<span class="p">}</span>
  
-func (this *infinite) outChannel() chan interface{} {
-    if len(this.buffer) == 0 {
-        return nil
-    }
-    return this.out
-}
+<span class="k">func</span> <span class="p">(</span><span class="n">this</span> <span class="o">*</span><span class="n">infinite</span><span class="p">)</span> <span class="n">outChannel</span><span class="p">()</span> <span class="k">chan</span> <span class="k">interface</span><span class="p">{}</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">==</span> <span class="m">0</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">nil</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">this</span><span class="o">.</span><span class="n">out</span>
+<span class="p">}</span>
  
-func (this *infinite) outValue() interface{} {
-    if len(this.buffer) == 0 {
-        return nil
-    }
-    return this.buffer[0]
-}
+<span class="k">func</span> <span class="p">(</span><span class="n">this</span> <span class="o">*</span><span class="n">infinite</span><span class="p">)</span> <span class="n">outValue</span><span class="p">()</span> <span class="k">interface</span><span class="p">{}</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">==</span> <span class="m">0</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">nil</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">this</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="m">0</span><span class="p">]</span>
+<span class="p">}</span>
  
-func (this *infinite) popValue() {
-    if len(this.buffer) == 0 {
-        return
-    }
-    this.buffer = this.buffer[1:]
-}
+<span class="k">func</span> <span class="p">(</span><span class="n">this</span> <span class="o">*</span><span class="n">infinite</span><span class="p">)</span> <span class="n">popValue</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">==</span> <span class="m">0</span> <span class="p">{</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+    <span class="n">this</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="p">]</span>
+<span class="p">}</span>
  
-func (this *infinite) pushValue(value interface{}) {
-    // replace oldest value by newest value
-    if len(this.buffer) &gt;= this.bufLength {
-        this.popValue()
-    }
-    this.buffer = append(this.buffer, value)
-}
+<span class="k">func</span> <span class="p">(</span><span class="n">this</span> <span class="o">*</span><span class="n">infinite</span><span class="p">)</span> <span class="n">pushValue</span><span class="p">(</span><span class="n">value</span> <span class="k">interface</span><span class="p">{})</span> <span class="p">{</span>
+    <span class="c">// replace oldest value by newest value</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">this</span><span class="o">.</span><span class="n">bufLength</span> <span class="p">{</span>
+        <span class="n">this</span><span class="o">.</span><span class="n">popValue</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="n">this</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">this</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="p">}</span>
  
-func (this *infinite) transceive() {
-    for {
-        select {
-        case v, ok := &lt;- this.in:
-            if !ok {
-                this.in = nil
-                return
-            }
-            this.pushValue(v)
-        case this.outChannel() &lt;- this.outValue():
-            this.popValue()
-        }
-    }
-}
+<span class="k">func</span> <span class="p">(</span><span class="n">this</span> <span class="o">*</span><span class="n">infinite</span><span class="p">)</span> <span class="n">transceive</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">{</span>
+        <span class="k">select</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="n">v</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="o">&lt;-</span> <span class="n">this</span><span class="o">.</span><span class="n">in</span><span class="o">:</span>
+            <span class="k">if</span> <span class="o">!</span><span class="n">ok</span> <span class="p">{</span>
+                <span class="n">this</span><span class="o">.</span><span class="n">in</span> <span class="o">=</span> <span class="no">nil</span>
+                <span class="k">return</span>
+            <span class="p">}</span>
+            <span class="n">this</span><span class="o">.</span><span class="n">pushValue</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">this</span><span class="o">.</span><span class="n">outChannel</span><span class="p">()</span> <span class="o">&lt;-</span> <span class="n">this</span><span class="o">.</span><span class="n">outValue</span><span class="p">()</span><span class="o">:</span>
+            <span class="n">this</span><span class="o">.</span><span class="n">popValue</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
 <p>测试代码如下：</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func TestNewInfinite(t *testing.T) {
-    // enviroment data
-    bufferSize := 0
-    in, out, err := NewInfinite(bufferSize)
-    if err != nil {
-        t.Error(err)
-        return
-    }
-    // reading
-    go func() {
-        for {
-            select {
-            case v, ok := &lt;- out:
-                if !ok {
-                    fmt.Println("in has been closed")
-                    return
-                }
-                vi := v.(int)
-                fmt.Println(vi)
-            }
-        }
-        fmt.Println("finished redading")
-    }()
-    // writing
-    for i := 0; i &lt; 100; i++ {
-        fmt.Println("writing", i)
-        in &lt;- i
-    }
-    // closing
-    close(in)
-    fmt.Println("finished writing")
-}
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">TestNewInfinite</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c">// enviroment data</span>
+    <span class="n">bufferSize</span> <span class="o">:=</span> <span class="m">0</span>
+    <span class="n">in</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">NewInfinite</span><span class="p">(</span><span class="n">bufferSize</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+    <span class="c">// reading</span>
+    <span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">{</span>
+            <span class="k">select</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="n">v</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="o">&lt;-</span> <span class="n">out</span><span class="o">:</span>
+                <span class="k">if</span> <span class="o">!</span><span class="n">ok</span> <span class="p">{</span>
+                    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"in has been closed"</span><span class="p">)</span>
+                    <span class="k">return</span>
+                <span class="p">}</span>
+                <span class="n">vi</span> <span class="o">:=</span> <span class="n">v</span><span class="o">.</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+                <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">vi</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"finished redading"</span><span class="p">)</span>
+    <span class="p">}()</span>
+    <span class="c">// writing</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="m">100</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"writing"</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">in</span> <span class="o">&lt;-</span> <span class="n">i</span>
+    <span class="p">}</span>
+    <span class="c">// closing</span>
+    <span class="nb">close</span><span class="p">(</span><span class="n">in</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"finished writing"</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
 <h2 id="a-参考">A. 参考</h2>
@@ -190,19 +190,19 @@ func (this *infinite) transceive() {
 
   <div class="wrapper">
 
-    <h2 class="footer-heading">zhang1career&#39;s Blog</h2>
+    <h2 class="footer-heading">Rongjin Zhang&#39;s Blog</h2>
 
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">zhang1career&#39;s Blog</li><li><a class="u-email" href="mailto:rongjin.zh@gmail.com">rongjin.zh@gmail.com</a></li></ul>
+          <li class="p-name">Rongjin Zhang&#39;s Blog</li><li><a class="u-email" href="mailto:rongjin.zh@gmail.com">rongjin.zh@gmail.com</a></li></ul>
       </div>
 
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jekyll"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jekyll</span></a></li><li><a href="https://www.twitter.com/jekyllrb"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jekyllrb</span></a></li></ul>
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/zhang1career"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">zhang1career</span></a></li><li><a href="https://www.twitter.com/RongjinZh"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">RongjinZh</span></a></li></ul>
 </div>
 
       <div class="footer-col footer-col-3">
-        <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</p>
+        <p></p>
       </div>
     </div>
 

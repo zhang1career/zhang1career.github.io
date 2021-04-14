@@ -19,7 +19,7 @@ categories: go
 + 父协程从 channel 读取运行信息，实现监控
 
 代码如下：
-```
+```go
 const key = "info"
 
 func parent() {
@@ -63,7 +63,7 @@ func children(ctx context.Context) {
 + 父协程监控心跳信号，如果一段时间内没有收到心跳信号，那么认为子协程发生运行故障
 
 代码如下：
-```
+```go
 const key = "heartbeat"
  
 func main() {

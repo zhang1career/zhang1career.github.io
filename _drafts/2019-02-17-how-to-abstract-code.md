@@ -35,7 +35,7 @@ categories: go
 ### 3.1. 通用代码
 
 定义 Work 接口，执行 Work 接口定义的 Do()：
-```
+```go
 type Work interface {
     Do() interface{}
 }
@@ -57,7 +57,7 @@ func (this *worker) run() {
 ```
 
 接收应用代码创建的实例，执行相应的 Do()
-```
+```go
 func (this *Parser) AddWorker(num int, out chan int, callback chan Work) {
     for i := 0; i < num; i++ {
         out <- i
@@ -71,14 +71,14 @@ func (this *Parser) AddWorker(num int, out chan int, callback chan Work) {
 ### 3.2. 应用代码
 
 实现 Work 接口：
-``` 
+``` go
 func (this *snowflake) Do() interface{} {
    return fmt.SPrintf("worker%d doing", this.id)
 }
 ```
 
 创建实例，以 Work 接口返回给通用代码：
-```
+```go
 func CreateSnowFlow(machineIds chan int) chan Work {
    output := make(chan Work)
    go func() {
@@ -103,7 +103,7 @@ func createSnowFlake(id int) *snowflake {
 ```
 
 ### 3.3. 测试代码
-```
+```go
 func TestParser(t *testing.T) {
    machineIds := make(chan int)
    snows := CreateSnowFlow(machineIds)
@@ -113,3 +113,4 @@ func TestParser(t *testing.T) {
    p.Run()
 }
 ```
+

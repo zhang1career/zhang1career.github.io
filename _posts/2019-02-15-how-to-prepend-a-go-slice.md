@@ -10,7 +10,7 @@ categories: go
 ## 1. 示例
 
 直接上码：
-```
+```go
 func Prepend(slice []interface{}, elems ...interface{}) []interface{} {
    if len(elems) <= 0 {
       return slice
@@ -23,3 +23,4 @@ func Prepend(slice []interface{}, elems ...interface{}) []interface{} {
    return ret
 }
 ```
+
