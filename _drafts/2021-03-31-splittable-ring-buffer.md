@@ -5,27 +5,32 @@ categories: algorithm
 
 # Splittable Ring Buffer
 
-Splittable ring buffer is a ring buffer that can be split into several parts. Each part is still a ring buffer.
+A splittable ring buffer is a ring buffer that can be split into several parts. Each part is still a ring buffer. The origin buffer and the split ones share a homomorphism addressing method.
 
 ## Split Principal
 
-Writting to a ring buffer is usually by a continnously increasing index. Suppose the ring buffer to be split into *s* parts, then the addressing of each split*<sub>i</sub>* needs a *step* of *n* and an *offset* of *i*, with both *s* and *i* belonging to *Z<sup>+</sup>*.
+Addressing a ring buffer is usually via modulo an index by the buffer size. For example, if the buffer size is $size$, the distance between adjacent elements is $step$. And the $0$th element of the buffer addresses $offset$. Then the $j$th element of the buffer addresses $(j \cdot step + offset) \quad mod \quad size$.
 
-For example, if the tail of the *split<sub>i</sub>* addresses *memory[p step + offset]*, with *p* belonging to *Z<sup>+</sup>*. Given *index = i*, a *data<sub>i</sub>* is write to *memory[i]*, then the *split<sub>i</sub>* gets a new item in *memory[(p+1) step + offset]*, which values *data<sub>i</sub>*.
+Suppose the ring buffer to be split into $s$ parts, regularly with each other element. In any $split_i$, the distance between adjacent elements is $s$. And the $0$th element addresses $i$. Then the $j$th element addresses $(j_i \cdot s + i) \quad mod \quad size$.
 
-|      *memory*       | ...  |        *0*         |        *1*         | ...  |        *i*         | ...  |       *s-1*        | ...  |
-| :-----------------: | :--: | :----------------: | :----------------: | :--: | :----------------: | :--: | :----------------: | :--: |
-|       *index*       |      |                    |                    |      |        *i*         |      |                    |      |
-| *split<sub>0</sub>* | ...  | *data<sub>0</sub>* |                    |      |                    |      |                    | ...  |
-| *split<sub>1</sub>* | ...  |                    | *data<sub>1</sub>* |      |                    |      |                    | ...  |
-|         ...         | ...  |                    |                    | ...  |                    |      |                    | ...  |
-| *split<sub>i</sub>* | ...  |                    |                    |      | *data<sub>i</sub>* |      |                    | ...  |
-|         ...         | ...  |                    |                    |      |                    | ...  |                    | ...  |
-| *split<sub>s</sub>* | ...  |                    |                    |      |                    |      | *data<sub>s</sub>* | ...  |
+// todo: 插入示意图
 
-Specially, when the origin ring buffer's length is a power-2 number, *2<sup>r</sup>* for instance. And the split number *s* is also a power-2 number, 2*<sup>n</sup>* for instance, with both *r* and *n* belonging to *Z<sup>+</sup>* and *r >= n*. Then addressing of the ring buffer can be achieved with just masking *(2<sup>r-n</sup> step + offset)* overflow.
+**Then the split parts are all rings too. And both the origin buffer and the split ones share a homomorphism addressing method.**
 
-**Then the split parts are all rings too.**
+Especially, when the origin ring buffer's length is a power-2 number, $2^p$ for instance. And the split number *s* is also a power-2 number,  $2^q$ for instance, with both $p$ and $q$ belonging to $Z^+$ and $p >= q$. Then addressing of the ring buffer can be achieved with just masking,  i.e. in any $split_i$, the $j$th element addresses $(j_i \cdot 2^q + i) \quad \& \quad (2^p-1)$.
+
+## Read/Write Seperation
+
+// todo: 解释读写分离原理
+
+|   memory​    | ...  |   $0$    |   $1$    | ...  | current index | ...  |  $s-1$   | ...  |
+| :---------: | :--: | :------: | :------: | :--: | :-----------: | :--: | :------: | :--: |
+|  $split_0$  | ...  | $data_0$ |          |      |               |      |          | ...  |
+| *$split_1$* | ...  |          | $data_1$ |      |               |      |          | ...  |
+|     ...     | ...  |          |          | ...  |               |      |          | ...  |
+|  $split_i$  | ...  |          |          |      |   $data_i$    |      |          | ...  |
+|     ...     | ...  |          |          |      |               | ...  |          | ...  |
+|  $split_s$  | ...  |          |          |      |               |      | $data_s$ | ...  |
 
 ## Demo Code
 

@@ -5,9 +5,10 @@ date:   2019-04-30 20:30:00 +0800
 categories: go
 ---
 
-> 
+# 如何选择可变管道
 
 ## 1. 要点
+
 + 可变参数的接收[1]
 + 递归 select
 + reflect.Select[2]
