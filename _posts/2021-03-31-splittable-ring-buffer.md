@@ -15,23 +15,11 @@ Addressing a ring buffer is usually via modulo an index by the buffer size. For 
 
 $$(j \cdot step + offset) \quad mod \quad size$$
 
-Suppose the ring buffer to be split into $s$ parts, regularly with each other element. As shown below, split_s_elem_i represents the $i$th element of the $s$th split.
+Suppose the ring buffer to be split into $s$ parts, regularly with each other element. As shown below, $split_s elem_i$ represents the $i$th element of the $s$th split.
 
-<table><tbody>
-    <tr>
-        <th>Memory</th><th>...</th><th>si</th><th>si+1</th><th>...</th><th>s(i+1)-1</th><th>...</th>
-    </tr>
-    <tr>
-        <td bgcolor="#eeeeee">split element</td>
-        <td bgcolor="#ffffff">...</td>
-        <td bgcolor="#d67070">split_0_elem_i</td>
-        <td bgcolor="#a3d670">split_1_elem_i</td>
-        <td bgcolor="#ffffff">...</td>
-        <td bgcolor="#70d6d6">split_s-1_elem_i</td>
-        <td bgcolor="#ffffff">...</td>
-    </tr>
-</table>
-
+| memory        | ...  | $si$             | $si+1$           | ...  | $s(i+1)-1$           | ...  |
+| ------------- | ---- | ---------------- | ---------------- | ---- | -------------------- | ---- |
+| split element | ...  | $split_0 elem_i$ | $split_i elem_i$ | ...  | $split_{s-1} elem_i$ | ...  |
 
 In any split, the distance between adjacent elements is $s$. In the $i$th split, the $0$th element address is $i$. The $j$th element of the $i$th split addresses
 
