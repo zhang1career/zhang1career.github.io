@@ -2,18 +2,19 @@
 layout: post
 title:  Splittable Ring Buffer
 date:   2021-03-31 16:52:00 +0800
-categories: [algorithm, ringbuffer]
+categories: algorithm
+use_math: true
 ---
 
 # Splittable Ring Buffer
 
 A splittable ring buffer is a ring buffer that can be split into several parts. Each part is still a ring buffer. The origin buffer and the split ones share a homomorphism addressing method.
 
-## Split Principal
+## 1. Split Principal
 
 Addressing a ring buffer is usually via modulo an index by the buffer size. For example, if the buffer size is $size$, the distance between adjacent elements is $step$. And the $0$th element address is $offset$. The $j$th element of the buffer addresses
 
-$$(j \cdot step + offset) \quad mod \quad size$$
+$(j \cdot step + offset) \quad mod \quad size \tag{1.1}$
 
 Suppose the ring buffer to be split into $s$ parts, regularly with each other element. As shown below, $split_s elem_i$ represents the $i$th element of the $s$th split.
 
@@ -23,13 +24,15 @@ Suppose the ring buffer to be split into $s$ parts, regularly with each other el
 
 In any split, the distance between adjacent elements is $s$. In the $i$th split, the $0$th element address is $i$. The $j$th element of the $i$th split addresses
 
-$$(j_i \cdot s + i) \quad mod \quad size$$
+$(j_i \cdot s + i) \quad mod \quad size \tag{1.2}$
 
 **Then the split parts are all rings too. And both the origin buffer and the split ones share a homomorphism addressing method.**
 
-Especially, when the origin ring buffer's length is a power-2 number, $2^p$ for instance. And the split number *s* is also a power-2 number,  $2^q$ for instance, with both $p$ and $q$ belonging to $Z^+$ and $p >= q$. Then addressing of the ring buffer can be achieved with just masking,  i.e. in any $split_i$, the $j$th element addresses $(j_i \cdot 2^q + i) \quad \& \quad (2^p-1)$.
+Especially, when the origin ring buffer's length is a power-2 number, $2^p$ for instance. And the split number *s* is also a power-2 number,  $2^q$ for instance, with both $p$ and $q$ belonging to $Z^+$ and $p >= q$. Then addressing of the ring buffer can be achieved with just masking,  i.e. in any $split_i$, the $j$th element addresses
 
-## Read/Write Seperation
+ $(j_i \cdot 2^q + i) \quad \& \quad (2^p-1) \tag{1.3}$
+
+## 2. Read/Write Seperation
 
 As shown below, the data written into the origin ring buffer, can be read by split ring buffer separately.
 
@@ -42,7 +45,7 @@ As shown below, the data written into the origin ring buffer, can be read by spl
 |     ...     | ...  |             |               |      |                  | ...  |                   | ...  |
 |  $split_s$  | ...  |             |               |      |                  |      | $data_{s(i+1)-1}$ | ...  |
 
-## Demo Code
+## 3. Demo Code
 
 Calculate *step* and *offset*, then split the ring buffer into *num* parts.
 
@@ -122,7 +125,7 @@ private boolean isFull() {
 }
 ```
 
-## Conclusion
+## 4. Conclusion
 
 Split mechanism separates a ring buffer into several parts, which can be read/write seperately. Some pingpong buffer can be designed based on this.
 
