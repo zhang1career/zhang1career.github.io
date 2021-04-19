@@ -2,7 +2,7 @@
 layout: post
 title:  Splittable Ring Buffer
 date:   2021-03-31 16:52:00 +0800
-categories: algorithm
+categories: [algorithm, ringbuffer]
 use_math: true
 ---
 
